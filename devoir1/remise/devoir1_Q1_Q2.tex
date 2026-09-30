@@ -1,0 +1,215 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-7025 -- Devoir 1}\rhead{\small Questions 1 et 2}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vZ}{\mathbf{Z}}
+\newcommand{\vx}{\mathbf{x}}\newcommand{\ve}{\mathbf{e}}\newcommand{\vb}{\mathbf{b}}
+\newcommand{\vc}{\mathbf{c}}\newcommand{\vv}{\mathbf{v}}\newcommand{\vd}{\mathbf{d}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\valpha}{\bm{\alpha}}
+\newcommand{\viota}{\bm{\iota}}
+\newcommand{\A}{\mathbf{A}}\newcommand{\I}{\mathbf{I}}\newcommand{\W}{\mathbf{W}}
+\newcommand{\Mz}{\mathbf{M}_Z}\newcommand{\Pz}{\mathbf{P}_Z}
+\newcommand{\tX}{\tilde{\mathbf{X}}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries ECN-7025 -- Économétrie I}\\[4pt]
+{\large Devoir 1 -- Automne 2026}\\[4pt]
+{\large Questions 1 et 2}
+\end{center}
+
+\vspace{0.3cm}
+\begin{tabular}{@{}ll@{}}
+Équipe : & \rule{7cm}{0.4pt} \quad Matricule : \rule{3cm}{0.4pt}\\[8pt]
+ & \rule{7cm}{0.4pt} \quad Matricule : \rule{3cm}{0.4pt}\\[8pt]
+ & \rule{7cm}{0.4pt} \quad Matricule : \rule{3cm}{0.4pt}\\
+\end{tabular}
+\vspace{0.3cm}
+\hrule
+
+% =====================================================================
+\section*{Question 1}
+% =====================================================================
+
+\subsection*{(a)(i) Démontrer que $\tilde{\vb}=\A^{-1}\vb$}
+
+On suppose, comme dans le modèle classique, que $\vX$ est de plein rang colonne, de sorte que $\vX'\vX$ est inversible et que $\vb=(\vX'\vX)^{-1}\vX'\vy$.
+
+\textit{$\tX$ est de plein rang colonne.} Soit $\vv\in\mathbb R^k$ tel que $\tX\vv=\vX(\A\vv)=\mathbf 0$. Puisque $\vX$ est de plein rang colonne, $\A\vv=\mathbf 0$, et puisque $\A$ est non singulière, $\vv=\mathbf 0$. Ainsi $\tX'\tX$ est inversible et l'estimateur MCO du modèle (2) est $\tilde{\vb}=(\tX'\tX)^{-1}\tX'\vy$.
+
+\textit{Calcul.} En utilisant $(\vX\A)'=\A'\vX'$, puis le fait que $\A'$, $\vX'\vX$ et $\A$ sont des matrices $k\times k$ inversibles, de sorte que $(\A'\vX'\vX\A)^{-1}=\A^{-1}(\vX'\vX)^{-1}(\A')^{-1}$ :
+\begin{align*}
+\tilde{\vb}
+&=\big((\vX\A)'(\vX\A)\big)^{-1}(\vX\A)'\vy
+=\big(\A'\vX'\vX\A\big)^{-1}\A'\vX'\vy\\
+&=\A^{-1}(\vX'\vX)^{-1}(\A')^{-1}\A'\vX'\vy
+=\A^{-1}(\vX'\vX)^{-1}\vX'\vy
+=\A^{-1}\vb . \qquad\blacksquare
+\end{align*}
+
+\textit{Remarques.} (1) Les valeurs prédites sont inchangées : $\tX\tilde{\vb}=\vX\A\A^{-1}\vb=\vX\vb$. Les résidus, la somme des carrés des résidus, $s^2$ et le $R^2$ sont donc identiques dans les deux modèles. (2) La matrice de variance estimée devient $\widehat{\Var}(\tilde{\vb})=s^2(\tX'\tX)^{-1}=\A^{-1}\,\widehat{\Var}(\vb)\,(\A^{-1})'$.
+
+\subsection*{(a)(ii) Changement d'unités du salaire (dollars $\to$ cents)}
+
+Dans le modèle $y_i=\beta_0+\beta_1x_i+\epsilon_i$, on a $\vX=[\viota\ \ \vx]$. Mesurer le salaire en cents revient à remplacer $x_i$ par $100x_i$, c'est-à-dire
+\[
+\tX=[\viota\ \ 100\vx]=\vX\A,\qquad \A=\begin{pmatrix}1&0\\0&100\end{pmatrix},\qquad \A^{-1}=\begin{pmatrix}1&0\\0&1/100\end{pmatrix}.
+\]
+$\A$ est non singulière, donc, par (i),
+\[
+\begin{pmatrix}\tilde b_0\\ \tilde b_1\end{pmatrix}=\A^{-1}\begin{pmatrix}b_0\\ b_1\end{pmatrix}=\begin{pmatrix}b_0\\ b_1/100\end{pmatrix}.
+\]
+
+\textit{Commentaire.}
+\begin{itemize}[nosep]
+\item Le coefficient estimé de $\beta_1$ est divisé par 100. $b_1$ mesure la variation des heures hebdomadaires travaillées associée à une hausse du salaire horaire de 1~\$ ; $\tilde b_1$ mesure la variation associée à une hausse de 1 cent, cent fois plus petite. L'effet économique estimé est donc le même, seule l'unité dans laquelle il est exprimé change.
+\item La constante est inchangée ($\tilde b_0=b_0$), car la colonne de 1 n'est pas modifiée.
+\item Par la remarque (2), $\widehat{\Var}(\tilde b_1)=\widehat{\Var}(b_1)/100^2$, d'où $\text{e.t.}(\tilde b_1)=\text{e.t.}(b_1)/100$. La statistique $t$, $\tilde b_1/\text{e.t.}(\tilde b_1)=b_1/\text{e.t.}(b_1)$, et la $p$-value sont donc inchangées, tout comme les résidus et le $R^2$ (remarque (1)).
+\end{itemize}
+En conclusion, un changement d'unités de mesure de $x_i$ modifie l'échelle du coefficient de pente, mais n'affecte ni la qualité de l'ajustement ni les conclusions des tests.
+
+% ---------------------------------------------------------------------
+\subsection*{(b) Égalité des sommes des carrés des résidus des régressions (3) et (4)}
+
+\textit{Notation et hypothèses.} $\Mz=\I_n-\Pz$, avec $\Pz=\vZ(\vZ'\vZ)^{-1}\vZ'$. On suppose $\W=[\vX\ \vZ]$ de plein rang colonne. Soient $(\vb,\vc)$ les estimateurs MCO de (3) et $\ve=\vy-\vX\vb-\vZ\vc$ les résidus correspondants. Soient $\tilde{\vb}$ l'estimateur MCO de (4) et $\tilde{\ve}=\Mz\vy-\Mz\vX\tilde{\vb}$ ses résidus.
+
+On utilise les propriétés de $\Mz$ : $\Mz'=\Mz$, $\Mz\Mz=\Mz$ et $\Mz\vZ=\mathbf 0$.
+
+On montre que $\ve=\tilde{\ve}$ ; l'égalité des sommes des carrés des résidus en découle.
+
+\textit{Étape 1 : estimateur de (4).} Soit $\vv$ tel que $\Mz\vX\vv=\mathbf 0$. Alors $\vX\vv=\Pz\vX\vv=\vZ\vd$ avec $\vd=(\vZ'\vZ)^{-1}\vZ'\vX\vv$, donc $\W(\vv',-\vd')'=\mathbf 0$. Le plein rang de $\W$ implique $\vv=\mathbf 0$. $\Mz\vX$ est donc de plein rang colonne, et
+\[
+\tilde{\vb}=\big((\Mz\vX)'\Mz\vX\big)^{-1}(\Mz\vX)'\Mz\vy=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy .
+\]
+
+\textit{Étape 2 : équations normales de (3).} $\W'\ve=\mathbf 0$, soit
+\begin{align}
+\vX'\vX\vb+\vX'\vZ\vc&=\vX'\vy \quad(\iff \vX'\ve=\mathbf 0), \tag{N1}\\
+\vZ'\vX\vb+\vZ'\vZ\vc&=\vZ'\vy \quad(\iff \vZ'\ve=\mathbf 0). \tag{N2}
+\end{align}
+
+\textit{Étape 3 : $\vb=\tilde{\vb}$ (théorème de Frisch-Waugh-Lovell).} De (N2), $\vc=(\vZ'\vZ)^{-1}\vZ'(\vy-\vX\vb)$. En substituant dans (N1) :
+\[
+\vX'\vX\vb+\vX'\Pz(\vy-\vX\vb)=\vX'\vy
+\]
+\[
+\iff \vX'(\I_n-\Pz)\vX\vb=\vX'(\I_n-\Pz)\vy
+\iff \vX'\Mz\vX\,\vb=\vX'\Mz\vy .
+\]
+Donc $\vb=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy=\tilde{\vb}$.
+
+\textit{Étape 4 : $\Mz\ve=\ve$.} Par (N2), $\vZ'\ve=\mathbf 0$, donc $\Pz\ve=\vZ(\vZ'\vZ)^{-1}\vZ'\ve=\mathbf 0$ et $\Mz\ve=\ve-\Pz\ve=\ve$.
+
+\textit{Étape 5 : conclusion.} En prémultipliant $\vy=\vX\vb+\vZ\vc+\ve$ par $\Mz$ et en utilisant $\Mz\vZ=\mathbf 0$, l'étape 4, puis l'étape 3 :
+\[
+\Mz\vy=\Mz\vX\vb+\ve
+\quad\Longrightarrow\quad
+\ve=\Mz\vy-\Mz\vX\vb=\Mz\vy-\Mz\vX\tilde{\vb}=\tilde{\ve}.
+\]
+Les deux régressions ont donc exactement le même vecteur de résidus, et par conséquent
+\[
+\ve'\ve=\tilde{\ve}'\tilde{\ve}\qquad\Big(\text{et de même } \textstyle\sum_i e_i=\sum_i\tilde e_i\Big). \qquad\blacksquare
+\]
+
+\textit{Remarque.} Les sommes des carrés des résidus sont égales, mais pas les degrés de liberté : l'estimateur sans biais de $\sigma^2$ est $\ve'\ve/(n-k-m)$, où $m$ est le nombre de colonnes de $\vZ$, et non $\tilde{\ve}'\tilde{\ve}/(n-k)$ comme le calculerait un logiciel appliqué à (4).
+
+% ---------------------------------------------------------------------
+\subsection*{(c) Moyenne conditionnelle de l'erreur non nulle}
+
+On suppose un échantillon aléatoire, de sorte que $\E[\epsilon_i\mid x_1,\dots,x_n]=\E[\epsilon_i\mid x_i]=\alpha_0+\alpha_1x_i$.
+
+\textit{Réécriture du modèle.} Posons $u_i=\epsilon_i-(\alpha_0+\alpha_1x_i)$. Par construction, $\E[u_i\mid x_i]=0$, et
+\[
+y_i=\beta_0+\beta_1x_i+\alpha_0+\alpha_1x_i+u_i=(\beta_0+\alpha_0)+(\beta_1+\alpha_1)x_i+u_i .
+\]
+Ce modèle satisfait l'hypothèse d'exogénéité ; les MCO appliqués à (5) estiment donc sans biais ses coefficients.
+
+\textit{Vérification directe.} Avec $\vX=[\viota\ \vx]$ et $\valpha=(\alpha_0,\alpha_1)'$, on a $\E[\veps\mid\vX]=\vX\valpha$. Par la décomposition $\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps$,
+\[
+\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\E[\veps\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\vX\valpha=\vbeta+\valpha .
+\]
+Par la loi des espérances itérées, $\E[\vb]=\vbeta+\valpha$. Donc
+\[
+\boxed{\gamma_0=\beta_0+\alpha_0,\qquad \gamma_1=\beta_1+\alpha_1.}
+\]
+Les MCO sont biaisés pour $\beta_0$ (biais $\alpha_0$) et pour $\beta_1$ (biais $\alpha_1$). Le terme $\alpha_0$ est absorbé par la constante, ce qui fait de $\E[\epsilon_i]=0$ une simple normalisation en présence d'une constante. En revanche, $\alpha_1\neq0$, c'est-à-dire une erreur corrélée avec $x_i$, entraîne un biais sur la pente.
+
+% =====================================================================
+\section*{Question 2}
+% =====================================================================
+
+Modèle : $y_i=\beta x_i+\epsilon_i$. On raisonne conditionnellement aux régresseurs $\vX=(x_1,\dots,x_n)$, avec un échantillon aléatoire : $\E[\epsilon_i\mid\vX]=0$, $\Var(\epsilon_i\mid\vX)=\sigma^2$ et $\Cov(\epsilon_i,\epsilon_j\mid\vX)=0$ pour $i\ne j$. On suppose $\sum(x_i-\bar x)^2>0$. Avec les moments empiriques (les facteurs $1/n$ ou $1/(n-1)$ se simplifient),
+\[
+b_{MCO}=\frac{\sumi x_iy_i}{\sumi x_i^2},\qquad
+b_{MOM}=\frac{\sumi(x_i-\bar x)(y_i-\bar y)}{\sumi(x_i-\bar x)^2}.
+\]
+Comme $\sum(x_i-\bar x)=0$, on a les identités
+\[
+\text{(I1)}\ \ \sumi(x_i-\bar x)(y_i-\bar y)=\sumi(x_i-\bar x)y_i,\qquad
+\text{(I2)}\ \ \sumi(x_i-\bar x)x_i=\sumi(x_i-\bar x)^2 .
+\]
+
+\subsection*{(a) Les deux estimateurs sont sans biais}
+
+\textit{$b_{MCO}$.} En substituant $y_i=\beta x_i+\epsilon_i$ :
+\[
+b_{MCO}=\frac{\beta\sum x_i^2+\sum x_i\epsilon_i}{\sum x_i^2}=\beta+\sumi w_i\epsilon_i,\qquad w_i=\frac{x_i}{\sum_j x_j^2}.
+\]
+Les poids $w_i$ ne dépendent que de $\vX$, donc $\E[b_{MCO}\mid\vX]=\beta+\sum_i w_i\E[\epsilon_i\mid\vX]=\beta$.
+
+\textit{$b_{MOM}$.} Par (I1), puis en substituant $y_i=\beta x_i+\epsilon_i$ et en utilisant (I2) :
+\[
+b_{MOM}=\frac{\sum(x_i-\bar x)y_i}{\sum(x_i-\bar x)^2}=\frac{\beta\sum(x_i-\bar x)x_i+\sum(x_i-\bar x)\epsilon_i}{\sum(x_i-\bar x)^2}=\beta+\sumi k_i\epsilon_i,\qquad k_i=\frac{x_i-\bar x}{\sum_j(x_j-\bar x)^2}.
+\]
+Donc $\E[b_{MOM}\mid\vX]=\beta+\sum_i k_i\E[\epsilon_i\mid\vX]=\beta$.
+
+Par la loi des espérances itérées, $\E[b_{MCO}]=\E[b_{MOM}]=\beta$ : les deux estimateurs sont sans biais. $\blacksquare$
+
+\subsection*{(b) $b_{MCO}$ est efficace relativement à $b_{MOM}$}
+
+Pour des poids $a_i$ fonctions de $\vX$, l'homoscédasticité et l'absence de corrélation des erreurs donnent
+\[
+\Var\Big(\sum_i a_i\epsilon_i\,\Big|\,\vX\Big)=\sigma^2\sum_i a_i^2 .
+\]
+Avec les écritures obtenues en (a) :
+\[
+\Var(b_{MCO}\mid\vX)=\sigma^2\sum_i w_i^2=\frac{\sigma^2}{\sumi x_i^2},\qquad
+\Var(b_{MOM}\mid\vX)=\sigma^2\sum_i k_i^2=\frac{\sigma^2}{\sumi(x_i-\bar x)^2}.
+\]
+Or
+\[
+\sumi x_i^2=\sumi\big((x_i-\bar x)+\bar x\big)^2=\sumi(x_i-\bar x)^2+2\bar x\sumi(x_i-\bar x)+n\bar x^2=\sumi(x_i-\bar x)^2+n\bar x^2\ \ge\ \sumi(x_i-\bar x)^2 .
+\]
+Par conséquent
+\[
+\Var(b_{MCO}\mid\vX)=\frac{\sigma^2}{\sum(x_i-\bar x)^2+n\bar x^2}\ \le\ \frac{\sigma^2}{\sum(x_i-\bar x)^2}=\Var(b_{MOM}\mid\vX),
+\]
+avec inégalité stricte dès que $\bar x\ne0$. Les deux estimateurs étant sans biais, $b_{MCO}$ est efficace relativement à $b_{MOM}$. $\blacksquare$
+
+Le rapport des variances est $\Var(b_{MOM}\mid\vX)/\Var(b_{MCO}\mid\vX)=\sum x_i^2/\sum(x_i-\bar x)^2=1+\bar x^2/\hat\sigma_x^2$, où $\hat\sigma_x^2=\frac1n\sum(x_i-\bar x)^2$.
+
+\textit{Autre argument (Gauss-Markov).} $b_{MOM}=\sum_i k_iy_i$ est un estimateur linéaire en $\vy$ et sans biais (partie (a)). Sous les hypothèses du modèle, les conditions du théorème de Gauss-Markov sont satisfaites pour le modèle $\vy=\vx\beta+\veps$, dont l'estimateur MCO est $b_{MCO}$. Celui-ci a donc la plus petite variance parmi les estimateurs linéaires sans biais. De fait, $\sum_i w_i(k_i-w_i)=0$, d'où $\Var(b_{MOM}\mid\vX)=\Var(b_{MCO}\mid\vX)+\sigma^2\sum_i(k_i-w_i)^2$.
+
+\subsection*{(c) Explication intuitive}
+
+$b_{MOM}$ est la pente MCO de la régression de $y$ sur une constante et $x$. Il estime donc une ordonnée à l'origine, alors que le modèle impose qu'elle soit nulle : la droite doit passer par l'origine. $b_{MOM}$ n'exploite pas cette information, tandis que $b_{MCO}$ l'exploite. Estimer un paramètre superflu se paie par une perte de précision.
+
+On le voit aussi dans les formules. $b_{MOM}$ n'utilise que la variation de $x$ autour de sa moyenne, $\sum(x_i-\bar x)^2$, alors que $b_{MCO}$ utilise la variation de $x$ autour de zéro, $\sum x_i^2=\sum(x_i-\bar x)^2+n\bar x^2$. Or la précision d'une pente croît avec la variation de la variable explicative exploitée. Le terme $n\bar x^2$ représente l'information supplémentaire apportée par la contrainte de passage par l'origine, qui « ancre » la droite. Ce gain est d'autant plus grand que $\bar x$ est éloigné de zéro. Si $\bar x=0$, les deux estimateurs coïncident.
+
+Ce gain d'efficacité repose toutefois sur la validité de la restriction « pas de constante ». Si le vrai modèle comportait une constante $\beta_0\ne0$, $b_{MCO}$ serait biaisé ($\E[b_{MCO}\mid\vX]=\beta+\beta_0\sum x_i/\sum x_i^2$), alors que $b_{MOM}$ resterait sans biais.
+
+\end{document}
