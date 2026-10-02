@@ -1,0 +1,213 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-7025 -- Devoir 1}\rhead{\small Question 1(c) par les formules explicites}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+\newcommand{\Sxx}{S_{xx}}
+
+\newtcolorbox{cle}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={À comprendre},#1}
+\newtcolorbox{resultat}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Résultat de l'étape},#1}
+\newtcolorbox{pourquoi}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Pourquoi cette manipulation ?},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Question 1(c) : une autre méthode}\\[6pt]
+{\large Calcul direct des espérances de $b_0$ et $b_1$ à partir de leurs formules explicites}
+\end{center}
+
+\tableofcontents
+
+% =====================================================================
+\section{Le point de départ}
+
+\textbf{Modèle :} \quad $y_i=\beta_0+\beta_1x_i+\epsilon_i$, \quad avec \quad $\E[\epsilon_i\mid x_i]=\alpha_0+\alpha_1x_i$.
+
+Les MCO appliqués à ce modèle donnent les formules du cours (équation [16]) :
+\[
+b_1=\frac{\sumi(x_i-\bar x)\,y_i}{\Sxx},\qquad \Sxx=\sumi(x_i-\bar x)^2,\qquad\qquad b_0=\bar y-b_1\bar x .
+\]
+
+\begin{cle}
+On cherche ce que ces estimateurs estiment « en moyenne », c'est-à-dire $\E[b_1]$ et $\E[b_0]$. Ces espérances sont, par définition, les $\gamma_1$ et $\gamma_0$ de l'énoncé : « les MCO estiment sans biais $\gamma_0$ et $\gamma_1$ » veut dire $\E[b_0]=\gamma_0$ et $\E[b_1]=\gamma_1$.
+\end{cle}
+
+\textbf{Hypothèse} (échantillon aléatoire) : on raisonne conditionnellement à toutes les $x$ (notées $x$ ci-dessous), et
+\[
+\E[\epsilon_i\mid x_1,\dots,x_n]=\alpha_0+\alpha_1x_i .
+\]
+
+\textbf{Deux identités utiles}, qui viennent toutes deux de $\sum(x_i-\bar x)=0$ (la somme des écarts à la moyenne est nulle) :
+\begin{align*}
+\text{(I1)}\qquad & \sumi(x_i-\bar x)\cdot c=c\sumi(x_i-\bar x)=0 \quad\text{pour toute constante } c,\\
+\text{(I2)}\qquad & \sumi(x_i-\bar x)\,x_i=\sumi(x_i-\bar x)^2=\Sxx .
+\end{align*}
+Preuve de (I2) : $\sum(x_i-\bar x)^2=\sum(x_i-\bar x)x_i-\bar x\sum(x_i-\bar x)=\sum(x_i-\bar x)x_i-0$.
+
+% =====================================================================
+\section{Le calcul, étape par étape}
+
+\subsection*{Étape 1 : réécrire $b_1$ en fonction des erreurs}
+
+On remplace $y_i$ par $\beta_0+\beta_1x_i+\epsilon_i$ dans le numérateur :
+\begin{align*}
+\sumi(x_i-\bar x)y_i
+&=\beta_0\sumi(x_i-\bar x)+\beta_1\sumi(x_i-\bar x)x_i+\sumi(x_i-\bar x)\epsilon_i\\
+&=\qquad 0\qquad\ +\qquad \beta_1\Sxx\qquad +\sumi(x_i-\bar x)\epsilon_i
+&&\text{(I1) et (I2)}.
+\end{align*}
+On divise par $\Sxx$ :
+\[
+b_1=\beta_1+\frac{\sumi(x_i-\bar x)\,\epsilon_i}{\Sxx}.
+\]
+
+\begin{resultat}
+$b_1=\beta_1+\dfrac{\sum(x_i-\bar x)\epsilon_i}{\Sxx}$ : c'est l'écriture habituelle « vraie valeur $+$ erreur d'échantillonnage » (comme l'équation [79] du cours).
+\end{resultat}
+
+\subsection*{Étape 2 : l'espérance de $b_1$, donc $\gamma_1$}
+
+Les poids $(x_i-\bar x)/\Sxx$ ne dépendent que des $x$ ; sachant les $x$, ce sont des constantes, qu'on peut sortir de l'espérance :
+\[
+\E[b_1\mid x]=\beta_1+\frac{\sumi(x_i-\bar x)\,\E[\epsilon_i\mid x]}{\Sxx}
+=\beta_1+\frac{\sumi(x_i-\bar x)(\alpha_0+\alpha_1x_i)}{\Sxx}.
+\]
+
+\begin{pourquoi}
+C'est ici que la question diffère du cours. Dans le cours, $\E[\epsilon_i\mid x]=0$ et ce terme disparaît : $b_1$ est sans biais pour $\beta_1$. Ici, $\E[\epsilon_i\mid x]=\alpha_0+\alpha_1x_i\neq0$ : le terme reste, et il faut le calculer.
+\end{pourquoi}
+
+On calcule la somme au numérateur :
+\[
+\sumi(x_i-\bar x)(\alpha_0+\alpha_1x_i)
+=\alpha_0\sumi(x_i-\bar x)+\alpha_1\sumi(x_i-\bar x)x_i
+=0+\alpha_1\Sxx
+\qquad\text{(I1) et (I2)}.
+\]
+Donc
+\[
+\E[b_1\mid x]=\beta_1+\frac{\alpha_1\Sxx}{\Sxx}=\beta_1+\alpha_1 .
+\]
+
+\begin{resultat}
+$\boxed{\gamma_1=\beta_1+\alpha_1}$
+
+Remarque : \textbf{$\alpha_0$ disparaît de la pente}, grâce à (I1). Une erreur de moyenne constante ne déforme pas la pente.
+\end{resultat}
+
+\subsection*{Étape 3 : réécrire $\bar y$ et calculer son espérance}
+
+On fait la moyenne du modèle sur les $n$ observations :
+\[
+\bar y=\frac1n\sumi(\beta_0+\beta_1x_i+\epsilon_i)=\beta_0+\beta_1\bar x+\bar\epsilon,\qquad \bar\epsilon=\frac1n\sumi\epsilon_i .
+\]
+Espérance de la moyenne des erreurs :
+\[
+\E[\bar\epsilon\mid x]=\frac1n\sumi\E[\epsilon_i\mid x]=\frac1n\sumi(\alpha_0+\alpha_1x_i)=\alpha_0+\alpha_1\bar x .
+\]
+Donc
+\[
+\E[\bar y\mid x]=\beta_0+\beta_1\bar x+\alpha_0+\alpha_1\bar x .
+\]
+
+\subsection*{Étape 4 : l'espérance de $b_0$, donc $\gamma_0$}
+
+On part de $b_0=\bar y-b_1\bar x$ et on utilise les étapes 2 et 3 ($\bar x$ est une constante sachant les $x$) :
+\begin{align*}
+\E[b_0\mid x]&=\E[\bar y\mid x]-\E[b_1\mid x]\,\bar x\\
+&=(\beta_0+\beta_1\bar x+\alpha_0+\alpha_1\bar x)-(\beta_1+\alpha_1)\bar x\\
+&=\beta_0+\alpha_0+\underbrace{(\beta_1\bar x-\beta_1\bar x)}_{0}+\underbrace{(\alpha_1\bar x-\alpha_1\bar x)}_{0}\\
+&=\beta_0+\alpha_0 .
+\end{align*}
+
+\begin{resultat}
+$\boxed{\gamma_0=\beta_0+\alpha_0}$
+\end{resultat}
+
+\subsection*{Étape 5 : conclusion}
+
+Ces résultats ne dépendent pas des $x$. Par la loi des espérances itérées, $\E[b_1]=\E\big[\E[b_1\mid x]\big]=\beta_1+\alpha_1$ et $\E[b_0]=\beta_0+\alpha_0$.
+
+\begin{resultat}[title={Réponse finale}]
+\[
+\gamma_0=\beta_0+\alpha_0,\qquad\qquad \gamma_1=\beta_1+\alpha_1 .
+\]
+Les MCO estiment sans biais $\gamma_0$ et $\gamma_1$, mais ils sont \textbf{biaisés pour $\beta_0$} (biais $\alpha_0$) et \textbf{pour $\beta_1$} (biais $\alpha_1$).
+\end{resultat}
+
+% =====================================================================
+\section{Vérification numérique}
+
+Prenons $\beta_0=1$, $\beta_1=0{,}5$, $\alpha_0=2$, $\alpha_1=0{,}3$ et trois observations $x=(1,2,3)$. Alors $\bar x=2$ et $\Sxx=1+0+1=2$.
+
+\textbf{Pente.}
+\begin{align*}
+\E[b_1]&=0{,}5+\frac{\sum(x_i-2)(2+0{,}3x_i)}{2}
+=0{,}5+\frac{(-1)(2{,}3)+0\cdot(2{,}6)+(1)(2{,}9)}{2}\\
+&=0{,}5+\frac{0{,}6}{2}=0{,}8=\beta_1+\alpha_1\ \checkmark
+\end{align*}
+
+\textbf{Constante.}
+\[
+\E[\bar y]=1+0{,}5\cdot2+2+0{,}3\cdot2=4{,}6,
+\qquad
+\E[b_0]=4{,}6-0{,}8\cdot2=3=\beta_0+\alpha_0\ \checkmark
+\]
+
+% =====================================================================
+\section{Interprétation}
+
+\begin{cle}[title={Intuition}]
+\begin{itemize}
+\item \textbf{$\alpha_0$ est inoffensif} : une erreur de moyenne constante est simplement absorbée par la constante. C'est pourquoi l'hypothèse $\E[\epsilon]=0$ n'est qu'une \emph{normalisation} quand le modèle contient une constante (voir aussi la question 4(b)).
+\item \textbf{$\alpha_1$ est un vrai biais de pente} : si l'erreur varie systématiquement avec $x$, les MCO attribuent à $x$ un effet qui vient en réalité de l'erreur. Exemple : dans une équation de salaire, si l'habileté (contenue dans $\epsilon$) augmente avec l'éducation, alors $\alpha_1>0$ et les MCO surestiment le rendement de l'éducation (biais de variable omise).
+\end{itemize}
+\end{cle}
+
+% =====================================================================
+\section{Comparaison avec la méthode matricielle}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{2.2cm}p{5.8cm}p{5.8cm}@{}}
+\toprule
+& Méthode matricielle (corrigé) & Méthode des formules explicites (ce document) \\
+\midrule
+Outil & $\E[\mathbf b\mid\mathbf X]=\bm\beta+(\mathbf X'\mathbf X)^{-1}\mathbf X'\E[\bm\epsilon\mid\mathbf X]$ & formules scalaires de $b_0$ et $b_1$ \\
+Clé & $\E[\bm\epsilon\mid\mathbf X]=\mathbf X\bm\alpha$, donc $(\mathbf X'\mathbf X)^{-1}\mathbf X'\mathbf X\bm\alpha=\bm\alpha$ & $\sum(x_i-\bar x)=0$ fait disparaître $\alpha_0$ de la pente \\
+Avantage & plus courte, valable pour $k$ variables & plus concrète : on voit d'où vient chaque terme \\
+\bottomrule
+\end{tabular}
+\end{center}
+Les deux méthodes donnent le même résultat ; l'une ou l'autre peut être présentée dans la copie.
+
+% =====================================================================
+\section{Pour rédiger la réponse}
+
+\begin{enumerate}
+\item Écrire les formules $b_1=\sum(x_i-\bar x)y_i/\Sxx$ et $b_0=\bar y-b_1\bar x$.
+\item Remplacer $y_i$ et obtenir $b_1=\beta_1+\sum(x_i-\bar x)\epsilon_i/\Sxx$ \hfill (étape 1)
+\item Prendre l'espérance conditionnelle et calculer $\sum(x_i-\bar x)(\alpha_0+\alpha_1x_i)=\alpha_1\Sxx$ : $\gamma_1=\beta_1+\alpha_1$ \hfill (étape 2)
+\item Calculer $\E[\bar y\mid x]=\beta_0+\beta_1\bar x+\alpha_0+\alpha_1\bar x$ \hfill (étape 3)
+\item En déduire $\E[b_0\mid x]=\beta_0+\alpha_0$, donc $\gamma_0=\beta_0+\alpha_0$ \hfill (étape 4)
+\item Conclure par la loi des espérances itérées et interpréter $\alpha_0$ et $\alpha_1$ \hfill (étape 5)
+\end{enumerate}
+
+\end{document}
