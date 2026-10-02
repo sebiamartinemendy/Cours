@@ -1,0 +1,274 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-7025 -- Devoir 1}\rhead{\small Question 1(b) expliquée pas à pas}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vZ}{\mathbf{Z}}
+\newcommand{\ve}{\mathbf{e}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vc}{\mathbf{c}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}
+\newcommand{\I}{\mathbf{I}}
+\newcommand{\Mz}{\mathbf{M}_Z}\newcommand{\Pz}{\mathbf{P}_Z}
+
+\newtcolorbox{cle}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={À comprendre},#1}
+\newtcolorbox{resultat}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Résultat de l'étape},#1}
+\newtcolorbox{pourquoi}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Pourquoi cette manipulation ?},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Question 1(b) : explication pas à pas}\\[6pt]
+{\large Pourquoi les régressions (3) et (4) ont la même somme des carrés des résidus}
+\end{center}
+
+\tableofcontents
+
+% =====================================================================
+\section{Ce que demande la question}
+
+On compare deux régressions :
+\begin{itemize}
+\item \textbf{(3)} \quad $\vy=\vX\vbeta+\vZ\bm\gamma+\veps$ : on régresse $\vy$ sur \textbf{deux groupes de variables}, $\vX$ et $\vZ$, en même temps ;
+\item \textbf{(4)} \quad $\Mz\vy=\Mz\vX\vbeta+\tilde{\veps}$ : on régresse un $\vy$ « nettoyé » sur un $\vX$ « nettoyé », \textbf{sans} $\vZ$.
+\end{itemize}
+
+Il faut démontrer que \textbf{la somme des carrés des résidus (SCR) est la même} dans les deux régressions.
+
+\begin{cle}
+On va montrer quelque chose de \textbf{plus fort} que ce qui est demandé : les résidus des deux régressions sont \textbf{exactement les mêmes}, observation par observation. Si deux vecteurs de résidus sont identiques, leurs sommes de carrés (et leurs sommes) le sont forcément.
+\end{cle}
+
+% =====================================================================
+\section{La clé de tout : la matrice $\Mz$}
+
+\[
+\Mz=\I_n-\vZ(\vZ'\vZ)^{-1}\vZ' ,\qquad \Pz=\vZ(\vZ'\vZ)^{-1}\vZ',\qquad \text{donc } \Mz=\I_n-\Pz .
+\]
+
+\begin{cle}
+\textbf{$\Mz\vy$ = les résidus de la régression de $\vy$ sur $\vZ$} = la partie de $\vy$ que $\vZ$ n'explique pas.
+
+C'est la matrice $\mathbf M$ du cours (section 2.2), avec $\vZ$ à la place de $\vX$. Ainsi :
+\begin{itemize}[nosep]
+\item $\Mz\vy$ : $\vy$ « nettoyé » de $\vZ$ ;
+\item $\Mz\vX$ : chaque colonne de $\vX$ « nettoyée » de $\vZ$ ;
+\item $\Pz\vy$ : la partie de $\vy$ expliquée par $\vZ$ (les valeurs prédites).
+\end{itemize}
+\end{cle}
+
+\subsection*{L'exemple le plus simple à garder en tête}
+Si $\vZ$ est la constante (une colonne de 1), régresser $\vy$ sur une constante donne $\bar y$ ; les résidus sont $y_i-\bar y$. Donc \textbf{$\Mz$ centre les variables}. Dans ce cas :
+\begin{itemize}[nosep]
+\item (3) = régression de $y$ sur une constante et $x$ ;
+\item (4) = régression de $(y-\bar y)$ sur $(x-\bar x)$, sans constante.
+\end{itemize}
+La question affirme que ces deux régressions ont les mêmes résidus. Le cas général fonctionne de la même façon (voir l'exemple chiffré, section~\ref{sec:exemple}).
+
+\subsection*{Les trois propriétés de $\Mz$ qu'on va utiliser}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Propriété & Formule & Ce qu'elle veut dire \\
+\midrule
+Symétrique & $\Mz'=\Mz$ & sert à simplifier les produits transposés \\
+Idempotente & $\Mz\Mz=\Mz$ & nettoyer deux fois = nettoyer une fois \\
+Annule $\vZ$ & $\Mz\vZ=\mathbf 0$ & $\vZ$ nettoyé de $\vZ$ : il ne reste rien \\
+\bottomrule
+\end{tabular}
+\end{center}
+(Démontrées dans le cours, section 2.2. Par exemple : $\Mz\vZ=\vZ-\vZ(\vZ'\vZ)^{-1}\vZ'\vZ=\vZ-\vZ=\mathbf 0$.)
+
+% =====================================================================
+\section{Le plan de la démonstration}
+
+On veut montrer : résidus de (3) $=$ résidus de (4). Ce sera vrai si \textbf{deux choses} sont vraies :
+\begin{enumerate}[label=\textbf{(\Alph*)}]
+\item le coefficient de $\vX$ est le même dans les deux régressions : $\vb=\tilde{\vb}$. C'est le théorème de Frisch-Waugh-Lovell (FWL), qu'on redémontre (étapes 1 à 3) ;
+\item les résidus $\ve$ de (3) ne sont \textbf{pas modifiés} par $\Mz$ : $\Mz\ve=\ve$ (étape 4).
+\end{enumerate}
+Ensuite, une seule ligne de calcul conclut (étape 5).
+
+\textbf{Notation.}
+\begin{itemize}[nosep]
+\item Régression (3) : coefficients $\vb$ (pour $\vX$) et $\vc$ (pour $\vZ$), résidus $\ve=\vy-\vX\vb-\vZ\vc$.
+\item Régression (4) : coefficient $\tilde{\vb}$, résidus $\tilde{\ve}=\Mz\vy-\Mz\vX\tilde{\vb}$.
+\end{itemize}
+
+% =====================================================================
+\section{La démonstration, étape par étape}
+
+\subsection*{Étape 1 : la formule de $\tilde{\vb}$ (régression 4)}
+
+On applique la formule des MCO, $\vb=(\vX'\vX)^{-1}\vX'\vy$, en remplaçant $\vX$ par $\Mz\vX$ et $\vy$ par $\Mz\vy$ :
+\begin{align*}
+\tilde{\vb}&=\big[(\Mz\vX)'(\Mz\vX)\big]^{-1}(\Mz\vX)'(\Mz\vy)\\
+&=\big[\vX'\Mz'\Mz\vX\big]^{-1}\vX'\Mz'\Mz\vy && (\mathbf{AB})'=\mathbf B'\mathbf A'\\
+&=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy && \Mz'\Mz=\Mz\Mz=\Mz .
+\end{align*}
+
+\begin{resultat}
+$\tilde{\vb}=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy$. \quad On garde cette formule de côté : on va retrouver exactement la même pour $\vb$ à l'étape 3.
+\end{resultat}
+
+\subsection*{Étape 2 : les équations normales de (3)}
+
+Les MCO de (3) minimisent la somme des carrés des résidus. Les conditions du premier ordre (« équations normales », [24]--[25] du cours) disent que \textbf{les résidus sont orthogonaux à chaque variable explicative} :
+\begin{align*}
+\text{(N1)}\qquad \vX'\ve&=\mathbf 0 &&\Longleftrightarrow\qquad \vX'\vX\vb+\vX'\vZ\vc=\vX'\vy,\\
+\text{(N2)}\qquad \vZ'\ve&=\mathbf 0 &&\Longleftrightarrow\qquad \vZ'\vX\vb+\vZ'\vZ\vc=\vZ'\vy.
+\end{align*}
+(On obtient la forme de droite en remplaçant $\ve$ par $\vy-\vX\vb-\vZ\vc$ et en développant.)
+
+\begin{pourquoi}
+On a besoin de ces équations pour deux raisons : elles permettent de \emph{calculer} $\vb$ (étape 3), et (N2) dit que les résidus sont « non corrélés » avec $\vZ$ (étape 4).
+\end{pourquoi}
+
+\subsection*{Étape 3 : on montre que $\vb=\tilde{\vb}$ (FWL)}
+
+C'est un système de 2 équations à 2 inconnues ($\vb$ et $\vc$). On le résout \textbf{par substitution}, comme au secondaire.
+
+\textbf{3a. On isole $\vc$ dans (N2).}
+\[
+\vZ'\vZ\,\vc=\vZ'\vy-\vZ'\vX\vb
+\quad\Longrightarrow\quad
+\vc=(\vZ'\vZ)^{-1}\vZ'(\vy-\vX\vb).
+\]
+
+\textbf{3b. On remplace $\vc$ dans (N1).}
+\[
+\vX'\vX\vb+\vX'\vZ(\vZ'\vZ)^{-1}\vZ'(\vy-\vX\vb)=\vX'\vy .
+\]
+On reconnaît $\Pz=\vZ(\vZ'\vZ)^{-1}\vZ'$ au milieu, puis on développe la parenthèse :
+\[
+\vX'\vX\vb+\vX'\Pz\vy-\vX'\Pz\vX\vb=\vX'\vy .
+\]
+
+\textbf{3c. On regroupe les termes en $\vb$ à gauche et les termes en $\vy$ à droite.}
+\begin{align*}
+\vX'\vX\vb-\vX'\Pz\vX\vb&=\vX'\vy-\vX'\Pz\vy\\
+\vX'(\I-\Pz)\vX\,\vb&=\vX'(\I-\Pz)\vy && \text{on met } \vX' \text{ et } \vX \text{ (ou } \vy) \text{ en facteur}\\
+\vX'\Mz\vX\,\vb&=\vX'\Mz\vy && \I-\Pz=\Mz .
+\end{align*}
+
+\textbf{3d. On isole $\vb$.}
+\[
+\vb=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy .
+\]
+
+\begin{resultat}
+C'est \textbf{exactement la formule de $\tilde{\vb}$} de l'étape 1. Donc $\vb=\tilde{\vb}$. \hfill (A) \checkmark
+\end{resultat}
+
+\begin{pourquoi}
+Le coefficient de $\vX$ dans la régression complète (3) ne dépend que de la partie de $\vX$ et de $\vy$ que $\vZ$ n'explique pas. C'est la traduction matricielle de « l'effet de $\vX$ \emph{toutes choses égales par ailleurs} » (cours, section 2.3).
+\end{pourquoi}
+
+\subsection*{Étape 4 : $\Mz$ ne change pas les résidus de (3)}
+
+Par (N2), $\vZ'\ve=\mathbf 0$. Donc
+\[
+\Pz\ve=\vZ(\vZ'\vZ)^{-1}\underbrace{\vZ'\ve}_{=\mathbf 0}=\mathbf 0
+\qquad\Longrightarrow\qquad
+\Mz\ve=\ve-\Pz\ve=\ve-\mathbf 0=\ve .
+\]
+
+\begin{resultat}
+$\Mz\ve=\ve$. \hfill (B) \checkmark
+\end{resultat}
+
+\begin{pourquoi}
+Les résidus $\ve$ sont déjà « non corrélés » avec $\vZ$. Si on les régresse sur $\vZ$, $\vZ$ n'explique rien (coefficients nuls) ; le « nettoyage » ne retire donc rien.
+\end{pourquoi}
+
+\subsection*{Étape 5 : la conclusion}
+
+On part de la décomposition de la régression (3), $\vy=\vX\vb+\vZ\vc+\ve$, et on \textbf{multiplie tout par $\Mz$} :
+\begin{align*}
+\Mz\vy&=\Mz\vX\vb+\Mz\vZ\,\vc+\Mz\ve\\
+&=\Mz\vX\vb+\mathbf 0+\ve && \Mz\vZ=\mathbf 0 \text{ et } \Mz\ve=\ve \text{ (étape 4)} .
+\end{align*}
+On isole $\ve$ :
+\[
+\ve=\Mz\vy-\Mz\vX\vb=\Mz\vy-\Mz\vX\tilde{\vb}=\tilde{\ve}\qquad(\vb=\tilde{\vb}\text{, étape 3}).
+\]
+
+\begin{resultat}
+Les résidus des deux régressions sont \textbf{le même vecteur} : $\ve=\tilde{\ve}$. Donc
+\[
+\boxed{\ \ve'\ve=\tilde{\ve}'\tilde{\ve}\ }\qquad\text{(somme des carrés des résidus identique).}\qquad\blacksquare
+\]
+\end{resultat}
+
+\begin{pourquoi}
+On multiplie par $\Mz$ parce que c'est le seul moyen de faire apparaître, à partir de la régression (3), les objets de la régression (4) ($\Mz\vy$ et $\Mz\vX$). Le terme en $\vZ$ disparaît grâce à $\Mz\vZ=\mathbf 0$.
+\end{pourquoi}
+
+% =====================================================================
+\section{Vérification sur un petit exemple}\label{sec:exemple}
+
+$\vZ$ = constante, $x=(1,2,3)$, $y=(2,4,5)$. On a $\bar x=2$ et $\bar y=11/3$.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lll@{}}
+\toprule
+& Régression (3) : $y$ sur constante $+\ x$ & Régression (4) : $(y-\bar y)$ sur $(x-\bar x)$ \\
+\midrule
+Données & $y=(2,\ 4,\ 5)$, \ $x=(1,\ 2,\ 3)$ & $\tilde y=(-5/3,\ 1/3,\ 4/3)$, \ $\tilde x=(-1,\ 0,\ 1)$ \\
+Pente & $1{,}5$ \ (constante $2/3$) & $\sum\tilde x\tilde y/\sum\tilde x^2=3/2=\mathbf{1{,}5}$ \\
+Valeurs prédites & $(13/6,\ 22/6,\ 31/6)$ & $(-3/2,\ 0,\ 3/2)$ \\
+Résidus & $(-1/6,\ 1/3,\ -1/6)$ & $(-1/6,\ 1/3,\ -1/6)$ \\
+SCR & $1/36+1/9+1/36=\mathbf{1/6}$ & $\mathbf{1/6}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Détail des calculs.}
+\begin{itemize}[nosep]
+\item (3) : pente $=\sum(x_i-\bar x)(y_i-\bar y)/\sum(x_i-\bar x)^2=\big[(-1)(-5/3)+0+(1)(4/3)\big]/2=3/2$ ; constante $=\bar y-1{,}5\,\bar x=11/3-3=2/3$. Résidus : $2-13/6=-1/6$, \ $4-22/6=1/3$, \ $5-31/6=-1/6$.
+\item (4) : pente $=\big[(-1)(-5/3)+0\cdot(1/3)+1\cdot(4/3)\big]/\big[1+0+1\big]=3/2$. Résidus : $-5/3-(-3/2)=-1/6$, \ $1/3-0=1/3$, \ $4/3-3/2=-1/6$.
+\end{itemize}
+Même pente (étape 3), mêmes résidus (étape 5), même SCR. \checkmark
+
+% =====================================================================
+\section{L'intuition en une phrase}
+
+\begin{cle}[title={Intuition}]
+Inclure $\vZ$ dans la régression (modèle 3), ou retirer d'abord à $\vy$ et à $\vX$ tout ce que $\vZ$ explique (modèle 4), revient au même : \textbf{dans les deux cas, ce qui reste inexpliqué de $\vy$ est exactement la même chose.}
+
+C'est le théorème FWL du cours (section 2.3) : le coefficient d'une variable dans une régression multiple ne mesure que la partie de cette variable qui n'est pas expliquée par les autres.
+\end{cle}
+
+\begin{attention}
+Les SCR sont égales, mais pas les \textbf{degrés de liberté}. Pour estimer $\sigma^2$, il faut diviser par $n-k-m$ ($m$ = nombre de colonnes de $\vZ$), et non par $n-k$ comme le ferait un logiciel sur la régression (4). Les écarts-types affichés pour (4) sont donc un peu trop petits.
+\end{attention}
+
+% =====================================================================
+\section{Pour rédiger la réponse}
+
+\begin{enumerate}
+\item Écrire $\tilde{\vb}=(\vX'\Mz\vX)^{-1}\vX'\Mz\vy$ \hfill (étape 1)
+\item Écrire les équations normales de (3) : $\vX'\ve=\mathbf 0$ et $\vZ'\ve=\mathbf 0$ \hfill (étape 2)
+\item Résoudre par substitution pour obtenir $\vb=\tilde{\vb}$ \hfill (étape 3)
+\item Montrer $\Mz\ve=\ve$ grâce à $\vZ'\ve=\mathbf 0$ \hfill (étape 4)
+\item Multiplier $\vy=\vX\vb+\vZ\vc+\ve$ par $\Mz$ et conclure $\ve=\tilde{\ve}$, donc $\ve'\ve=\tilde{\ve}'\tilde{\ve}$ \hfill (étape 5)
+\end{enumerate}
+C'est exactement la structure de la réponse dans \texttt{devoir1\_Q1\_Q2.pdf}.
+
+\end{document}
