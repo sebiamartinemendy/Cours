@@ -1,0 +1,558 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-6025 -- Exercices}\rhead{\small Estimation de la moyenne et de la variance -- Corrigé}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vi}{\bm{\iota}}
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vY}{\mathbf{Y}}\newcommand{\vX}{\mathbf{X}}
+\newcommand{\veps}{\bm{\epsilon}}\newcommand{\ve}{\mathbf{e}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\J}{\mathbf{J}}
+\newcommand{\Pm}{\mathbf{P}}\newcommand{\Mm}{\mathbf{M}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\tr}{\operatorname{tr}}\newcommand{\EQM}{\operatorname{EQM}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démarche},#1}
+\newtcolorbox{reponse}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Réponse},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+\newtcolorbox{greene}[1][]{colback=gray!6,colframe=gray!55!black,fonttitle=\bfseries,title={Référence Greene},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Exercices ECN-6025 : corrigé détaillé}\\[6pt]
+{\large Estimation de la moyenne et de la variance}\\[4pt]
+{\small Démarches pas à pas, s'appuyant sur W. H. Greene, \emph{Econometric Analysis}}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=NavyBlue,title=Comment lire ce corrigé]
+Pour chaque exercice : l'\textbf{idée de la démarche}, le \textbf{calcul complet}, la \textbf{réponse} encadrée et, quand c'est utile, une \textbf{intuition} et le lien avec le livre de Greene.
+
+\textbf{Fil conducteur.} Presque tous les exercices sont des cas particuliers d'une seule idée : la régression de $y$ sur \emph{une constante seulement}. Dans ce modèle, $\vX=\vi$ (un vecteur de 1), l'estimateur MCO est la moyenne $\bar y$, et les matrices $\Pm$ et $\Mm$ du cours deviennent « prendre la moyenne » et « retirer la moyenne ».
+\end{tcolorbox}
+
+\tableofcontents
+
+% =====================================================================
+\section{Rappels utiles}
+% =====================================================================
+
+\begin{itemize}
+\item \textbf{Linéarité de l'espérance} : $\E[aX+bY+c]=a\E[X]+b\E[Y]+c$, toujours vrai (pas besoin d'indépendance).
+\item \textbf{Variance d'une combinaison linéaire} :
+\[\Var(aX+bY)=a^2\Var(X)+b^2\Var(Y)+2ab\Cov(X,Y).\]
+Si les variables sont indépendantes (ou non corrélées), le terme de covariance disparaît. Plus généralement, pour des $X_i$ non corrélées de même variance $\sigma^2$ : $\Var\big(\sum a_iX_i\big)=\sigma^2\sum a_i^2$.
+\item \textbf{Biais} : $\text{Biais}(\hat\theta)=\E[\hat\theta]-\theta$. Un estimateur est \textbf{sans biais} si $\E[\hat\theta]=\theta$.
+\item \textbf{Efficacité} : entre deux estimateurs sans biais, le meilleur est celui de plus petite variance.
+\item \textbf{Erreur quadratique moyenne (EQM)} : $\EQM(\hat\theta)=\E[(\hat\theta-\theta)^2]=\Var(\hat\theta)+\text{Biais}(\hat\theta)^2$. C'est le critère pour comparer des estimateurs dont certains sont biaisés.
+\end{itemize}
+
+\begin{greene}
+Les notions d'estimateur, de biais, d'efficacité et d'erreur quadratique moyenne sont présentées dans l'\textbf{Annexe C} de Greene (« Estimation and Inference »). Les matrices idempotentes, et en particulier la matrice $\Mm^0$ qui centre les données, sont dans l'\textbf{Annexe A}. Les matrices de projection $\Pm$ et $\Mm$ de la régression sont au \textbf{chapitre 3}, et les propriétés des MCO en échantillon fini (sans biais, variance, loi normale, intervalles de confiance) au \textbf{chapitre 4}.
+\end{greene}
+
+% =====================================================================
+\section{Exercice 1 : les matrices $\Pm_\iota$ et $\Mm_\iota$}
+% =====================================================================
+
+$\vi$ est le vecteur colonne $n\times 1$ de 1 ; $\Pm_\iota=\vi(\vi'\vi)^{-1}\vi'$ et $\Mm_\iota=\I_n-\vi(\vi'\vi)^{-1}\vi'$.
+
+\begin{idee}
+Ce sont les matrices $\Pm$ et $\Mm$ du cours dans le cas où $\vX=\vi$. On calcule d'abord les « briques » $\vi\vi'$ et $\vi'\vi$, puis tout le reste en découle. Faire attention aux dimensions : $\vi'\vi$ est un nombre, $\vi\vi'$ est une matrice $n\times n$.
+\end{idee}
+
+\subsection*{1. Les calculs}
+
+\textbf{$\vi\vi'$ ($n\times1$ fois $1\times n$ = matrice $n\times n$).} Chaque élément est $1\times1=1$ :
+\[
+\vi\vi'=\begin{pmatrix}1&1&\cdots&1\\1&1&\cdots&1\\\vdots&&\ddots&\vdots\\1&1&\cdots&1\end{pmatrix}=\J_n\quad\text{(la matrice remplie de 1)}.
+\]
+
+\textbf{$\vi'\vi$ ($1\times n$ fois $n\times1$ = nombre).} C'est la somme de $n$ fois $1\times1$ :
+\[
+\vi'\vi=\sumi 1=n .
+\]
+Donc $(\vi'\vi)^{-1}=1/n$, et
+\[
+\Pm_\iota=\frac1n\,\vi\vi'=\frac1n\J_n=\begin{pmatrix}\frac1n&\cdots&\frac1n\\\vdots&&\vdots\\\frac1n&\cdots&\frac1n\end{pmatrix},
+\qquad
+\Mm_\iota=\I_n-\frac1n\J_n=\begin{pmatrix}1-\frac1n&-\frac1n&\cdots&-\frac1n\\-\frac1n&1-\frac1n&\cdots&-\frac1n\\\vdots&&\ddots&\vdots\\-\frac1n&-\frac1n&\cdots&1-\frac1n\end{pmatrix}.
+\]
+
+\textbf{$\Pm_\iota\vi$.}
+\[
+\Pm_\iota\vi=\vi(\vi'\vi)^{-1}\underbrace{\vi'\vi}_{n}=\vi\cdot\frac1n\cdot n=\vi .
+\]
+
+\textbf{$\Mm_\iota\vi$.}
+\[
+\Mm_\iota\vi=\vi-\Pm_\iota\vi=\vi-\vi=\mathbf 0 .
+\]
+
+\textbf{$\Pm_\iota'$ et $\Mm_\iota'$.} Avec $(\mathbf{AB})'=\mathbf B'\mathbf A'$ et le fait que $1/n$ est un nombre :
+\[
+\Pm_\iota'=\Big(\tfrac1n\vi\vi'\Big)'=\tfrac1n(\vi')'\vi'=\tfrac1n\vi\vi'=\Pm_\iota,
+\qquad
+\Mm_\iota'=\I_n'-\Pm_\iota'=\I_n-\Pm_\iota=\Mm_\iota .
+\]
+
+\begin{reponse}
+$\vi\vi'=\J_n$ (matrice de 1), \ $\vi'\vi=n$, \ $\Pm_\iota\vi=\vi$, \ $\Mm_\iota\vi=\mathbf 0$, \ $\Pm_\iota'=\Pm_\iota$, \ $\Mm_\iota'=\Mm_\iota$ (les deux matrices sont symétriques).
+\end{reponse}
+
+\begin{intuition}
+Appliquer $\Pm_\iota$ à un vecteur $\vy$ remplace chaque élément par la moyenne : $\Pm_\iota\vy=\bar y\,\vi=(\bar y,\dots,\bar y)'$. Appliquer $\Mm_\iota$ retire la moyenne : $\Mm_\iota\vy=(y_1-\bar y,\dots,y_n-\bar y)'$. D'où les résultats : la moyenne d'un vecteur de 1 est 1 ($\Pm_\iota\vi=\vi$), et un vecteur de 1 auquel on retire sa moyenne donne 0 ($\Mm_\iota\vi=\mathbf 0$). Greene note cette matrice $\Mm^0$ : c'est celle qui intervient dans le $R^2$.
+\end{intuition}
+
+\subsection*{2. $\Pm_\iota^k=\Pm_\iota$ et $\Mm_\iota^k=\Mm_\iota$ pour tout $k\ge2$}
+
+\textbf{Étape 1 : le cas $k=2$ (idempotence).}
+\[
+\Pm_\iota^2=\vi(\vi'\vi)^{-1}\underbrace{\vi'\vi}_{n}(\vi'\vi)^{-1}\vi'
+=\vi\cdot\frac1n\cdot n\cdot\frac1n\,\vi'=\frac1n\vi\vi'=\Pm_\iota .
+\]
+(Autre façon : $\J_n\J_n=n\J_n$, car chaque élément du produit est une somme de $n$ fois $1\times1$ ; donc $\Pm_\iota^2=\frac1{n^2}\J_n\J_n=\frac1{n^2}n\J_n=\frac1n\J_n$.)
+\[
+\Mm_\iota^2=(\I-\Pm_\iota)(\I-\Pm_\iota)=\I-2\Pm_\iota+\Pm_\iota^2=\I-2\Pm_\iota+\Pm_\iota=\I-\Pm_\iota=\Mm_\iota .
+\]
+
+\textbf{Étape 2 : récurrence.} Supposons $\Pm_\iota^k=\Pm_\iota$ pour un certain $k\ge2$. Alors
+$\Pm_\iota^{k+1}=\Pm_\iota^k\Pm_\iota=\Pm_\iota\Pm_\iota=\Pm_\iota^2=\Pm_\iota$. La propriété, vraie pour $k=2$, est donc vraie pour tout $k\ge2$. Même raisonnement pour $\Mm_\iota$.
+
+\begin{reponse}
+$\Pm_\iota^k=\Pm_\iota$ et $\Mm_\iota^k=\Mm_\iota$ pour tout $k\ge2$.
+
+\textbf{Conclusion} : $\Pm_\iota$ et $\Mm_\iota$ sont \textbf{symétriques et idempotentes}. Ce sont donc des \textbf{matrices de projection} (orthogonale). De plus $\Pm_\iota\Mm_\iota=\Pm_\iota-\Pm_\iota^2=\mathbf 0$ : elles projettent sur deux sous-espaces orthogonaux.
+\begin{itemize}[nosep]
+\item $\Pm_\iota$ projette sur la droite engendrée par $\vi$ (les vecteurs constants) : elle « prend la moyenne ».
+\item $\Mm_\iota$ projette sur le sous-espace orthogonal (les vecteurs de somme nulle) : elle « centre ».
+\end{itemize}
+Pour une matrice idempotente, rang $=$ trace : $\tr(\Pm_\iota)=n\cdot\frac1n=1$ et $\tr(\Mm_\iota)=n-1$. Ce $n-1$ est exactement celui de la variance empirique (exercice 8).
+\end{reponse}
+
+\begin{intuition}
+« Projeter deux fois revient à projeter une fois » : une fois qu'on a remplacé chaque valeur par la moyenne, reprendre la moyenne ne change plus rien. Une fois qu'on a centré les données, les recentrer ne change plus rien.
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 2 : $\Mm_\iota\vX$, $\Pm_\iota\vX$, $\Mm_\iota\Mm_X$, $\Pm_\iota\Mm_X$}
+% =====================================================================
+
+\begin{attention}
+L'énoncé dit « $\vX$ un vecteur $n\times1$ » mais parle de sa « première colonne » : il s'agit en fait d'une \textbf{matrice} $n\times K$ de plein rang colonne dont la première colonne est $\vi$ (le modèle contient une constante). On note $\Mm_X=\I_n-\vX(\vX'\vX)^{-1}\vX'$.
+\end{attention}
+
+\begin{idee}
+Utiliser l'interprétation de l'exercice 1 ($\Pm_\iota$ = moyenne, $\Mm_\iota$ = centrage), et le fait clé : comme $\vi$ est une colonne de $\vX$, on a $\Mm_X\vi=\mathbf 0$ (propriété $\Mm\vX=\mathbf 0$ du cours, colonne par colonne).
+\end{idee}
+
+\subsection*{$\Mm_\iota\vX$ : les variables centrées}
+$\Mm_\iota$ agit colonne par colonne : $\Mm_\iota\vX=[\Mm_\iota\vi,\ \Mm_\iota\vx_2,\dots,\Mm_\iota\vx_K]$. Donc
+\[
+\Mm_\iota\vX=\begin{pmatrix}0&x_{12}-\bar x_2&\cdots&x_{1K}-\bar x_K\\\vdots&\vdots&&\vdots\\0&x_{n2}-\bar x_2&\cdots&x_{nK}-\bar x_K\end{pmatrix}.
+\]
+\textbf{La première colonne est nulle} ($\Mm_\iota\vi=\mathbf 0$), et les autres colonnes sont les variables \textbf{en écart à leur moyenne}. Conséquence : $\Mm_\iota\vX$ n'est plus de plein rang (une colonne nulle) ; son rang est $K-1$.
+
+\subsection*{$\Pm_\iota\vX$ : les moyennes}
+\[
+\Pm_\iota\vX=[\vi,\ \bar x_2\vi,\dots,\bar x_K\vi]=\begin{pmatrix}1&\bar x_2&\cdots&\bar x_K\\\vdots&\vdots&&\vdots\\1&\bar x_2&\cdots&\bar x_K\end{pmatrix}=\vi\,\bar{\vx}',\qquad \bar{\vx}=(1,\bar x_2,\dots,\bar x_K)' .
+\]
+Chaque colonne est remplacée par sa moyenne, répétée $n$ fois ; la première colonne reste $\vi$ ($\Pm_\iota\vi=\vi$). Toutes les lignes sont identiques, donc le rang est 1. Et bien sûr $\vX=\Pm_\iota\vX+\Mm_\iota\vX$ : chaque variable = sa moyenne + son écart à la moyenne.
+
+\subsection*{$\Pm_\iota\Mm_X$ et $\Mm_\iota\Mm_X$}
+
+Comme $\vi$ est la première colonne de $\vX$ et que $\Mm_X\vX=\mathbf 0$, on a $\Mm_X\vi=\mathbf 0$. En transposant ($\Mm_X$ est symétrique) : $\vi'\Mm_X=\mathbf 0'$. Donc
+\[
+\Pm_\iota\Mm_X=\frac1n\vi\,\underbrace{\vi'\Mm_X}_{\mathbf 0'}=\mathbf 0,
+\qquad
+\Mm_\iota\Mm_X=(\I-\Pm_\iota)\Mm_X=\Mm_X-\underbrace{\Pm_\iota\Mm_X}_{\mathbf 0}=\Mm_X .
+\]
+
+\begin{reponse}
+\begin{itemize}[nosep]
+\item $\Mm_\iota\vX$ : les colonnes de $\vX$ centrées ; la première colonne devient nulle.
+\item $\Pm_\iota\vX=\vi\bar{\vx}'$ : chaque colonne est remplacée par sa moyenne ; la première reste $\vi$.
+\item $\Pm_\iota\Mm_X=\mathbf 0$ \quad et \quad $\Mm_\iota\Mm_X=\Mm_X$.
+\end{itemize}
+\end{reponse}
+
+\begin{intuition}
+$\Mm_X\vy$ donne les résidus $\ve$ de la régression de $\vy$ sur $\vX$. Quand la régression contient une constante, ces résidus ont une moyenne nulle. Donc : prendre leur moyenne donne 0 ($\Pm_\iota\Mm_X\vy=\bar e\,\vi=\mathbf 0$), et les centrer ne change rien ($\Mm_\iota\Mm_X\vy=\ve$). C'est la propriété numérique « la somme des résidus est nulle » du cours, écrite en matrices. Greene l'utilise pour démontrer la décomposition $\text{SCT}=\text{SCR}+\text{SCE}$ du $R^2$ ($\Mm^0\ve=\ve$).
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 3 : deux estimateurs de $\mu$}
+% =====================================================================
+
+$X_1,\dots$ i.i.d. avec $\E(X_i)=\mu$ et $\Var(X_i)=\sigma^2$, indépendants.
+\[
+\hat\mu_1=\frac{X_1+X_2+X_3+X_4+X_5+X_6}{6},\qquad \hat\mu_2=\frac{2X_1-X_2+X_4}{2}.
+\]
+
+\begin{attention}
+L'énoncé annonce un échantillon $X_1,\dots,X_5$ mais $\hat\mu_1$ utilise $X_6$. On fait le calcul tel qu'écrit (6 observations). Si l'on voulait $\hat\mu_1=\frac15(X_1+\dots+X_5)$, il suffit de remplacer 6 par 5 : les conclusions sont les mêmes (voir la fin de l'exercice).
+\end{attention}
+
+\begin{idee}
+Les deux estimateurs sont des \textbf{combinaisons linéaires} des $X_i$. On utilise la linéarité de l'espérance pour le biais, et la formule $\Var(\sum a_iX_i)=\sigma^2\sum a_i^2$ (indépendance) pour la variance.
+\end{idee}
+
+\subsection*{1. Biais}
+\[
+\E[\hat\mu_1]=\frac{\E X_1+\dots+\E X_6}{6}=\frac{6\mu}{6}=\mu,
+\qquad
+\E[\hat\mu_2]=\frac{2\E X_1-\E X_2+\E X_4}{2}=\frac{2\mu-\mu+\mu}{2}=\frac{2\mu}{2}=\mu .
+\]
+
+\begin{reponse}
+Les deux estimateurs sont \textbf{sans biais}.
+
+Règle générale : un estimateur $\sum a_iX_i$ est sans biais pour $\mu$ si et seulement si \textbf{la somme des poids vaut 1}. Ici : $6\times\frac16=1$ et $1-\frac12+\frac12=1$.
+\end{reponse}
+
+\subsection*{2. Le meilleur estimateur}
+Les deux sont sans biais : on compare leurs \textbf{variances}.
+\[
+\Var(\hat\mu_1)=\frac{1}{6^2}\big(\Var X_1+\dots+\Var X_6\big)=\frac{6\sigma^2}{36}=\frac{\sigma^2}{6}\approx0{,}167\,\sigma^2,
+\]
+\[
+\Var(\hat\mu_2)=\Var\Big(X_1-\tfrac12X_2+\tfrac12X_4\Big)=\Big(1+\tfrac14+\tfrac14\Big)\sigma^2=\frac{3}{2}\sigma^2=1{,}5\,\sigma^2 .
+\]
+(Les signes « $-$ » disparaissent : les poids sont mis au carré.)
+
+\begin{reponse}
+$\Var(\hat\mu_1)=\sigma^2/6<\Var(\hat\mu_2)=3\sigma^2/2$ : \textbf{$\hat\mu_1$ est le meilleur} (plus efficace). Sa variance est 9 fois plus petite. (Avec $\hat\mu_1=\bar X$ sur 5 observations : $\Var=\sigma^2/5$, même conclusion.)
+\end{reponse}
+
+\begin{intuition}
+$\hat\mu_2$ est sans biais, mais il gaspille l'information : il n'utilise que 3 observations, et avec des poids très inégaux ($1$, $-\frac12$, $\frac12$). La moyenne simple donne le même poids à chaque observation, ce qui minimise $\sum a_i^2$ sous la contrainte $\sum a_i=1$ : c'est le meilleur estimateur linéaire sans biais de $\mu$. C'est le théorème de Gauss-Markov appliqué au modèle $X_i=\mu+\epsilon_i$ (Greene, ch. 4).
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 4 : hauteur moyenne des arbres}
+% =====================================================================
+
+(Cet exercice n'a pas de titre dans l'énoncé : il commence à « Supposons que vous mesuriez la hauteur de $n$ arbres ».)
+
+Modèle : $Y_i=\alpha+\epsilon_i$, $\E(\epsilon_i)=0$, $\Var(\epsilon_i)=\sigma^2$. Pour la variance, on suppose aussi les erreurs non corrélées entre arbres ($\Cov(\epsilon_i,\epsilon_j)=0$), hypothèse standard du modèle classique.
+
+\begin{idee}
+C'est une régression \textbf{sur une constante seulement}. On minimise la somme des carrés des résidus par rapport à $\alpha$ : une dérivée, une équation.
+\end{idee}
+
+\subsection*{(a) Estimateur MCO}
+On minimise $S(a)=\sumi(Y_i-a)^2$. Condition du premier ordre :
+\[
+\frac{dS}{da}=-2\sumi(Y_i-a)=0\iff\sumi Y_i-na=0\iff \hat\alpha=\frac1n\sumi Y_i=\bar Y .
+\]
+Condition du second ordre : $\frac{d^2S}{da^2}=2n>0$, c'est bien un minimum.
+
+\subsection*{(b) Variance}
+\[
+\Var(\hat\alpha)=\Var\Big(\frac1n\sumi Y_i\Big)=\frac1{n^2}\sumi\Var(Y_i)=\frac{1}{n^2}\cdot n\sigma^2=\frac{\sigma^2}{n},
+\]
+car $\Var(Y_i)=\Var(\alpha+\epsilon_i)=\Var(\epsilon_i)=\sigma^2$ ($\alpha$ est une constante) et les covariances sont nulles.
+
+\subsection*{(c) Biais}
+\[
+\E[\hat\alpha]=\frac1n\sumi\E[\alpha+\epsilon_i]=\frac1n\sumi(\alpha+0)=\frac{n\alpha}{n}=\alpha .
+\]
+
+\begin{reponse}
+$\hat\alpha=\bar Y$ \quad;\quad $\Var(\hat\alpha)=\sigma^2/n$ \quad;\quad $\hat\alpha$ est \textbf{sans biais}.
+\end{reponse}
+
+\begin{intuition}
+La variance $\sigma^2/n$ diminue avec $n$ : plus on mesure d'arbres, plus la moyenne est précise. L'écart-type $\sigma/\sqrt n$ diminue comme $1/\sqrt n$ : pour diviser l'imprécision par 2, il faut 4 fois plus d'arbres.
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 5 : temps de trajet moyen}
+% =====================================================================
+
+Modèle : $y_i=\delta+\epsilon_i$, $\epsilon_i$ i.i.d., $\E(\epsilon_i)=0$, $\Var(\epsilon_i)=\sigma^2$.
+
+\subsection*{1--3. Estimateur, variance, biais}
+Exactement comme à l'exercice 4 (même modèle, autre lettre) :
+\[
+\hat\delta=\bar y=\frac1n\sumi y_i,\qquad \Var(\hat\delta)=\frac{\sigma^2}{n},\qquad \E[\hat\delta]=\delta\ \ (\text{sans biais}).
+\]
+Ici, l'indépendance des $\epsilon_i$ est donnée par l'énoncé, ce qui justifie directement l'absence de covariances.
+
+\subsection*{4. Intervalle de confiance à 95\,\% ($\sigma^2$ connu, normalité)}
+
+\begin{idee}
+On a besoin de la \textbf{loi} de $\hat\delta$, pas seulement de sa moyenne et de sa variance. On la standardise pour obtenir une $N(0,1)$, dont on connaît les quantiles ($\pm1{,}96$ à 95\,\%), puis on « inverse » l'inégalité pour isoler $\delta$.
+\end{idee}
+
+\textbf{Étape 1 : loi de $\hat\delta$.} Si les $y_i$ sont normaux et indépendants, leur moyenne (combinaison linéaire) est normale :
+\[
+\hat\delta=\bar y\sim N\Big(\delta,\ \frac{\sigma^2}{n}\Big).
+\]
+
+\textbf{Étape 2 : standardisation.}
+\[
+Z=\frac{\bar y-\delta}{\sigma/\sqrt n}\sim N(0,1)\qquad\Longrightarrow\qquad P(-1{,}96\le Z\le1{,}96)=0{,}95 .
+\]
+
+\textbf{Étape 3 : on isole $\delta$.}
+\[
+-1{,}96\le\frac{\bar y-\delta}{\sigma/\sqrt n}\le1{,}96
+\iff \bar y-1{,}96\frac{\sigma}{\sqrt n}\le\delta\le\bar y+1{,}96\frac{\sigma}{\sqrt n}.
+\]
+
+\begin{reponse}
+\[
+\text{IC}_{95\%}(\delta)=\Big[\ \bar y-1{,}96\,\frac{\sigma}{\sqrt n}\ ;\ \bar y+1{,}96\,\frac{\sigma}{\sqrt n}\ \Big].
+\]
+\textbf{Exemple} : $n=25$ jours, $\bar y=32$ minutes, $\sigma=10$ minutes. Alors $\sigma/\sqrt n=2$ et $\text{IC}=[32-3{,}92\ ;\ 32+3{,}92]=[28{,}1\ ;\ 35{,}9]$ minutes.
+
+\textbf{Interprétation} : si l'on répétait l'expérience (enregistrer $n$ jours de trajet) un très grand nombre de fois, et qu'on construisait à chaque fois cet intervalle, \textbf{95\,\% de ces intervalles contiendraient le vrai temps moyen $\delta$}.
+\end{reponse}
+
+\begin{attention}
+\begin{itemize}[nosep]
+\item Il est incorrect de dire « il y a 95\,\% de chances que $\delta$ soit dans $[28{,}1\ ;\ 35{,}9]$ ». $\delta$ est un nombre fixe (inconnu) : il est dans cet intervalle-là ou il ne l'est pas. Ce qui est aléatoire, c'est l'intervalle (via $\bar y$). Les 95\,\% portent sur la \emph{méthode}.
+\item Si $\sigma^2$ était inconnu, on le remplacerait par $s^2$ (exercice 8) et 1,96 par le quantile de la loi de Student à $n-1$ degrés de liberté (Greene, ch. 4).
+\end{itemize}
+\end{attention}
+
+% =====================================================================
+\section{Exercice 6 : le poids des sacs de riz en écriture matricielle}
+% =====================================================================
+
+$y_i=\beta+\epsilon_i$, avec $Y_i$ i.i.d. $N(\beta,\sigma^2)$.
+
+\begin{idee}
+C'est l'exercice qui relie tout : le modèle « moyenne » écrit comme une régression avec $\vX=\vi$. On applique les formules générales des MCO du cours ($\hat{\bm\beta}=(\vX'\vX)^{-1}\vX'\vY$, $\Pm_X$, $\Mm_X$) et on retrouve la moyenne, $\Pm_\iota$ et $\Mm_\iota$ de l'exercice 1.
+\end{idee}
+
+\subsection*{1. Forme matricielle}
+\[
+\underbrace{\begin{pmatrix}y_1\\y_2\\\vdots\\y_n\end{pmatrix}}_{\vY\ (n\times1)}
+=\underbrace{\begin{pmatrix}1\\1\\\vdots\\1\end{pmatrix}}_{\vX=\vi\ (n\times1)}\beta
++\underbrace{\begin{pmatrix}\epsilon_1\\\epsilon_2\\\vdots\\\epsilon_n\end{pmatrix}}_{\veps\ (n\times1)},
+\qquad \veps\sim N(\mathbf 0,\sigma^2\I_n).
+\]
+La matrice des variables explicatives est la seule colonne de la constante ; $\beta$ est un scalaire ($K=1$).
+
+\subsection*{2. $\Pm_X\vY$ et $\Mm_X\vY$}
+Avec $\vX=\vi$, $\Pm_X=\Pm_\iota=\frac1n\vi\vi'$ et $\Mm_X=\Mm_\iota$ (exercice 1). Comme $\vi'\vY=\sum y_i=n\bar y$ :
+\[
+\Pm_X\vY=\frac1n\vi\,(\vi'\vY)=\frac1n\vi\cdot n\bar y=\bar y\,\vi=\begin{pmatrix}\bar y\\\vdots\\\bar y\end{pmatrix},
+\qquad
+\Mm_X\vY=\vY-\Pm_X\vY=\begin{pmatrix}y_1-\bar y\\\vdots\\y_n-\bar y\end{pmatrix}.
+\]
+
+\begin{reponse}
+\textbf{Conclusion} : $\Pm_X\vY=\hat{\vY}$ est le vecteur des \textbf{valeurs prédites}, ici la moyenne pour tout le monde ; $\Mm_X\vY=\ve$ est le vecteur des \textbf{résidus}, ici les écarts à la moyenne. On a la décomposition $\vY=\Pm_X\vY+\Mm_X\vY$, avec les deux parties orthogonales : $(\Pm_X\vY)'(\Mm_X\vY)=\bar y\sum(y_i-\bar y)=0$. C'est la géométrie des MCO du chapitre 3 de Greene dans son cas le plus simple.
+\end{reponse}
+
+\subsection*{3. $\vX'\vX=n$}
+\[
+\vX'\vX=\vi'\vi=(1,1,\dots,1)\begin{pmatrix}1\\\vdots\\1\end{pmatrix}=\sumi1\cdot1=n .
+\]
+
+\subsection*{4. $\hat\beta=\bar y$}
+\[
+\vX'\vY=\vi'\vY=\sumi y_i,
+\qquad
+\hat\beta=(\vX'\vX)^{-1}\vX'\vY=\frac1n\sumi y_i=\bar y .
+\]
+La formule générale des MCO redonne bien la moyenne, comme le calcul par dérivée de l'exercice 4.
+
+\subsection*{5. Variance}
+Par la formule du cours, $\Var(\hat{\bm\beta}\mid\vX)=\sigma^2(\vX'\vX)^{-1}$ :
+\[
+\Var(\hat\beta)=\sigma^2(\vi'\vi)^{-1}=\frac{\sigma^2}{n}.
+\]
+Vérification directe : $\Var(\bar y)=\frac1{n^2}\cdot n\sigma^2=\frac{\sigma^2}n$.
+
+\subsection*{6. Biais}
+$\hat\beta=(\vX'\vX)^{-1}\vX'(\vX\beta+\veps)=\beta+(\vX'\vX)^{-1}\vX'\veps=\beta+\frac1n\sumi\epsilon_i$, d'où
+\[
+\E[\hat\beta]=\beta+\frac1n\sumi\E[\epsilon_i]=\beta :\quad \hat\beta \text{ est sans biais.}
+\]
+
+\subsection*{7. Distribution d'échantillonnage}
+$\hat\beta=\beta+\frac1n\sum\epsilon_i$ est une combinaison linéaire de variables normales indépendantes, donc normale. Avec l'espérance (question 6) et la variance (question 5) :
+
+\begin{reponse}
+\[
+\hat\beta\sim N\Big(\beta,\ \frac{\sigma^2}{n}\Big).
+\]
+C'est le cas particulier, avec $\vX=\vi$, du résultat général de Greene (ch. 4) : $\hat{\bm\beta}\mid\vX\sim N\big(\bm\beta,\ \sigma^2(\vX'\vX)^{-1}\big)$ sous l'hypothèse de normalité des erreurs. Cette loi permet de construire l'intervalle de confiance de l'exercice 5.
+\end{reponse}
+
+% =====================================================================
+\section{Exercice 7 : deux estimateurs de la taille moyenne des cartons}
+% =====================================================================
+
+$y_i=\beta+\epsilon_i$, $\E(\epsilon_i)=0$. Pour les variances, on suppose (comme dans les autres exercices) les $Y_i$ indépendants de variance $\sigma^2$.
+\[
+\hat\beta_1=Y_1,\qquad \hat\beta_2=\frac1{n-1}\sumi Y_i .
+\]
+
+\begin{idee}
+Le biais vient de l'espérance. Comme l'un des deux estimateurs est biaisé, on ne peut pas comparer seulement les variances : on compare les \textbf{erreurs quadratiques moyennes} (EQM $=$ variance $+$ biais$^2$).
+\end{idee}
+
+\subsection*{1. Biais}
+\[
+\E[\hat\beta_1]=\E[Y_1]=\beta\quad\Longrightarrow\quad\text{Biais}(\hat\beta_1)=0 .
+\]
+\[
+\E[\hat\beta_2]=\frac1{n-1}\sumi\E[Y_i]=\frac{n\beta}{n-1}
+\quad\Longrightarrow\quad
+\text{Biais}(\hat\beta_2)=\frac{n\beta}{n-1}-\beta=\frac{n\beta-(n-1)\beta}{n-1}=\frac{\beta}{n-1}.
+\]
+
+\begin{reponse}
+$\hat\beta_1$ est sans biais ; $\hat\beta_2$ est biaisé, de biais $\beta/(n-1)>0$ (il surestime, car il divise une somme de $n$ termes par $n-1$). Le biais tend vers 0 quand $n\to\infty$ : $\hat\beta_2$ est \textbf{asymptotiquement sans biais}.
+\end{reponse}
+
+\subsection*{2. Le meilleur estimateur}
+
+\textbf{Variances.}
+\[
+\Var(\hat\beta_1)=\Var(Y_1)=\sigma^2,
+\qquad
+\Var(\hat\beta_2)=\frac{1}{(n-1)^2}\sumi\Var(Y_i)=\frac{n\sigma^2}{(n-1)^2}.
+\]
+
+\textbf{Erreurs quadratiques moyennes.}
+\[
+\EQM(\hat\beta_1)=\sigma^2+0^2=\sigma^2,
+\qquad
+\EQM(\hat\beta_2)=\frac{n\sigma^2}{(n-1)^2}+\frac{\beta^2}{(n-1)^2}=\frac{n\sigma^2+\beta^2}{(n-1)^2}.
+\]
+
+\textbf{Comparaison.} $\hat\beta_2$ a la plus petite EQM si et seulement si
+\[
+\frac{n\sigma^2+\beta^2}{(n-1)^2}<\sigma^2\iff \beta^2<\big[(n-1)^2-n\big]\sigma^2=(n^2-3n+1)\,\sigma^2 .
+\]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Exemple ($\beta=1$ m, $\sigma=0{,}1$ m) & $\EQM(\hat\beta_1)$ & $\EQM(\hat\beta_2)$ & Meilleur \\
+\midrule
+$n=10$ & 0,0100 & $(0{,}10+1)/81=0{,}0136$ & $\hat\beta_1$ \\
+$n=100$ & 0,0100 & $(1+1)/9801=0{,}0002$ & $\hat\beta_2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{reponse}
+\begin{itemize}
+\item \textbf{Critère du biais seul} : $\hat\beta_1$ est sans biais, $\hat\beta_2$ ne l'est pas.
+\item \textbf{Critère de l'EQM} (le bon critère quand un estimateur est biaisé) : $\hat\beta_2$ est meilleur dès que $\beta^2<(n^2-3n+1)\sigma^2$, ce qui est toujours le cas pour $n$ assez grand. Le biais de $\hat\beta_2$ est petit et sa variance $\approx\sigma^2/n$ est bien plus faible que celle de $\hat\beta_1$, qui reste $\sigma^2$ quel que soit $n$.
+\item \textbf{Convergence} : $\hat\beta_1=Y_1$ n'utilise qu'une observation ; il ne s'améliore jamais quand $n$ augmente (il n'est pas convergent). $\hat\beta_2$ est convergent : biais et variance tendent vers 0.
+\end{itemize}
+En pratique, \textbf{$\hat\beta_2$ est préférable} pour un échantillon de taille raisonnable. Mais le meilleur de tous est la moyenne $\bar Y=\frac{n-1}{n}\hat\beta_2$ : sans biais \emph{et} de variance minimale $\sigma^2/n$ (exercices 4 et 6).
+\end{reponse}
+
+\begin{intuition}
+C'est l'arbitrage biais-variance : $\hat\beta_1$ vise juste en moyenne mais « tremble » énormément (un seul carton) ; $\hat\beta_2$ vise un tout petit peu trop haut mais tremble très peu. Mieux vaut souvent un petit biais qu'une énorme variance. Greene présente l'EQM précisément pour faire ce type de comparaison (Annexe C).
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 8 : estimateurs de la variance}
+% =====================================================================
+
+$z_1,\dots,z_n$ i.i.d. avec $\E(z_i)=\mu$ et $\Var(z_i)=\sigma^2$.
+\[
+\hat S^2=\frac1{n-1}\sumi(z_i-\bar z)^2,\qquad \hat\sigma^2=\frac1n\sumi(z_i-\bar z)^2 .
+\]
+
+\begin{idee}
+Les deux estimateurs ont le même numérateur $\text{SC}=\sum(z_i-\bar z)^2$. Il suffit donc de calculer $\E[\text{SC}]$ une fois. Le piège : les écarts sont pris par rapport à $\bar z$ (estimé), pas par rapport à $\mu$ (inconnu).
+\end{idee}
+
+\subsection*{Méthode 1 : calcul direct}
+
+\textbf{Étape 1 : décomposer.} On écrit $z_i-\bar z=(z_i-\mu)-(\bar z-\mu)$ et on développe :
+\[
+\sumi(z_i-\bar z)^2=\sumi(z_i-\mu)^2-2(\bar z-\mu)\sumi(z_i-\mu)+n(\bar z-\mu)^2 .
+\]
+Or $\sum(z_i-\mu)=n\bar z-n\mu=n(\bar z-\mu)$, donc le terme du milieu vaut $-2n(\bar z-\mu)^2$ et
+\[
+\sumi(z_i-\bar z)^2=\sumi(z_i-\mu)^2-n(\bar z-\mu)^2 .
+\]
+
+\textbf{Étape 2 : espérances.}
+\begin{itemize}[nosep]
+\item $\E[(z_i-\mu)^2]=\Var(z_i)=\sigma^2$, donc $\E\big[\sum(z_i-\mu)^2\big]=n\sigma^2$.
+\item $\E[(\bar z-\mu)^2]=\Var(\bar z)=\sigma^2/n$ (exercice 4), donc $\E[n(\bar z-\mu)^2]=\sigma^2$.
+\end{itemize}
+\[
+\E\Big[\sumi(z_i-\bar z)^2\Big]=n\sigma^2-\sigma^2=(n-1)\sigma^2 .
+\]
+
+\subsection*{Méthode 2 : avec la matrice $\Mm^0$ (Greene)}
+Avec $\mathbf z=(z_1,\dots,z_n)'$ : $\sum(z_i-\bar z)^2=(\Mm_\iota\mathbf z)'(\Mm_\iota\mathbf z)=\mathbf z'\Mm_\iota\mathbf z$ (symétrie et idempotence, exercice 1). Écrivons $\mathbf z=\mu\vi+\mathbf u$ avec $\E[\mathbf u]=\mathbf 0$ et $\E[\mathbf u\mathbf u']=\sigma^2\I_n$. Comme $\Mm_\iota\vi=\mathbf 0$, $\Mm_\iota\mathbf z=\Mm_\iota\mathbf u$, et avec l'astuce de la trace du cours :
+\[
+\E[\mathbf u'\Mm_\iota\mathbf u]=\E[\tr(\Mm_\iota\mathbf u\mathbf u')]=\tr\big(\Mm_\iota\,\sigma^2\I_n\big)=\sigma^2\tr(\Mm_\iota)=\sigma^2(n-1).
+\]
+C'est exactement le calcul de $\E[\ve'\ve]=\sigma^2(n-K)$ du cours, avec $K=1$.
+
+\subsection*{Conclusion}
+\[
+\E[\hat S^2]=\frac{(n-1)\sigma^2}{n-1}=\sigma^2,
+\qquad
+\E[\hat\sigma^2]=\frac{(n-1)\sigma^2}{n}=\sigma^2-\frac{\sigma^2}{n}.
+\]
+
+\begin{reponse}
+\begin{itemize}[nosep]
+\item $\hat S^2$ est \textbf{sans biais} pour $\sigma^2$.
+\item $\hat\sigma^2$ est \textbf{biaisé} : $\text{Biais}(\hat\sigma^2)=-\sigma^2/n<0$. Il sous-estime la variance. Le biais disparaît quand $n\to\infty$ : il est asymptotiquement sans biais.
+\end{itemize}
+\end{reponse}
+
+\begin{intuition}
+Pourquoi diviser par $n-1$ ? Les écarts sont calculés autour de $\bar z$, qui est par construction le point le plus proche des données : $\sum(z_i-a)^2$ est minimal en $a=\bar z$. Donc $\sum(z_i-\bar z)^2\le\sum(z_i-\mu)^2$ : les écarts autour de $\bar z$ sont systématiquement un peu trop petits. On a « consommé » un degré de liberté pour estimer $\mu$ (les $n$ écarts doivent sommer à 0, il n'en reste que $n-1$ libres). Diviser par $n-1$ au lieu de $n$ corrige exactement ce biais. En régression avec $K$ coefficients, on divise de même par $n-K$ : $s^2=\ve'\ve/(n-K)$ (Greene, ch. 4).
+
+Remarque : $\hat\sigma^2$ est l'estimateur du maximum de vraisemblance sous normalité. Il est biaisé mais de variance un peu plus faible ; son EQM est même plus petite que celle de $\hat S^2$ sous normalité. On retrouve l'arbitrage biais-variance de l'exercice 7.
+\end{intuition}
+
+% =====================================================================
+\section{Synthèse}
+% =====================================================================
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{6.2cm}p{8.6cm}@{}}
+\toprule
+Résultat & Où il apparaît \\
+\midrule
+$\vi'\vi=n$, \ $\Pm_\iota=\frac1n\vi\vi'$ (moyenne), \ $\Mm_\iota$ (centrage) & Ex. 1, 2, 6 ; matrice $\Mm^0$ de Greene \\
+$\Pm,\Mm$ symétriques, idempotentes, $\tr\Mm_\iota=n-1$ & Ex. 1, 8 \\
+Régression sur une constante : $\hat\beta=\bar y$ & Ex. 4, 5, 6 \\
+$\E[\bar y]=\mu$, \ $\Var(\bar y)=\sigma^2/n$ & Ex. 3 à 8 \\
+$\bar y\sim N(\mu,\sigma^2/n)$, IC : $\bar y\pm1{,}96\,\sigma/\sqrt n$ & Ex. 5, 6 \\
+Sans biais $\iff$ somme des poids $=1$ ; meilleur $=$ variance minimale & Ex. 3 (Gauss-Markov) \\
+Estimateur biaisé : comparer les EQM & Ex. 7 \\
+$\E\big[\sum(z_i-\bar z)^2\big]=(n-1)\sigma^2$ & Ex. 8 ; cas $K=1$ de $\E[\ve'\ve]=(n-K)\sigma^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
