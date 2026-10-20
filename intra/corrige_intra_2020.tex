@@ -1,0 +1,419 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-6025 -- Examen intra, automne 2020}\rhead{\small Corrigé détaillé}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vZ}{\mathbf{Z}}
+\newcommand{\ve}{\mathbf{e}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\vi}{\bm{\iota}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\C}{\mathbf{C}}\newcommand{\D}{\mathbf{D}}
+\newcommand{\A}{\mathbf{A}}\newcommand{\Pm}{\mathbf{P}}\newcommand{\Mm}{\mathbf{M}}
+\newcommand{\tb}{\tilde{\mathbf{b}}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démarche},#1}
+\newtcolorbox{reponse}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Réponse},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Examen intra ECN-6025 (automne 2020)}\\[6pt]
+{\large Corrigé détaillé, démarche pas à pas}\\[4pt]
+{\small Références : notes du chapitre 2 (MCO) ; W. H. Greene, \emph{Econometric Analysis}, ch. 3 à 5}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=NavyBlue,title=Comment lire ce corrigé]
+Pour chaque question : l'\textbf{idée de la démarche}, le \textbf{calcul ou l'argument complet}, la \textbf{réponse} encadrée et, quand c'est utile, une \textbf{intuition}. Pour les « vrai, faux ou incertain », la note dépend de l'\emph{explication} : on donne donc toujours l'argument mathématique ou économétrique qui justifie la réponse.
+\end{tcolorbox}
+
+\tableofcontents
+
+% =====================================================================
+\section{Question 1 : vrai, faux ou incertain (20 points)}
+% =====================================================================
+
+\subsection*{(a) Sans normalité, les MCO sont biaisés ?}
+
+\begin{idee}
+Reprendre la preuve de l'absence de biais et regarder \emph{quelles hypothèses elle utilise réellement}.
+\end{idee}
+
+On écrit l'estimateur en fonction de l'erreur :
+\[
+\vb=(\vX'\vX)^{-1}\vX'\vy=(\vX'\vX)^{-1}\vX'(\vX\vbeta+\veps)=\vbeta+(\vX'\vX)^{-1}\vX'\veps .
+\]
+Puis on prend l'espérance conditionnelle à $\vX$ :
+\[
+\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\,\E[\veps\mid\vX]=\vbeta \quad\text{si}\quad \E[\veps\mid\vX]=\mathbf 0 .
+\]
+La preuve n'utilise que trois hypothèses : la linéarité du modèle, le plein rang de $\vX$ (pour que $(\vX'\vX)^{-1}$ existe) et l'exogénéité $\E[\veps\mid\vX]=\mathbf 0$. \textbf{La normalité n'intervient nulle part.}
+
+\begin{reponse}
+\textbf{Faux.} L'absence de biais repose sur $\E[\veps\mid\vX]=\mathbf 0$, pas sur la normalité. Sans normalité, les MCO restent sans biais, et même BLUE si $\E[\veps\veps'\mid\vX]=\sigma^2\I_n$ (Gauss-Markov n'exige pas la normalité).
+
+Ce que la normalité apporte : la loi \emph{exacte} de $\vb$ en échantillon fini, $\vb\mid\vX\sim N\big(\vbeta,\sigma^2(\vX'\vX)^{-1}\big)$, et donc la validité exacte des tests $t$ et $F$. Sans normalité, ces tests ne sont valables qu'approximativement en grand échantillon (théorème central limite).
+\end{reponse}
+
+\subsection*{(b) $\frac1n\sum x_{j,i}e_i=0$ prouve l'indépendance entre erreurs et régresseurs ?}
+
+\begin{idee}
+Distinguer une propriété \emph{numérique} des MCO (vraie pour n'importe quelles données) d'une hypothèse \emph{statistique} sur la population.
+\end{idee}
+
+Les conditions du premier ordre des MCO (équations normales) s'écrivent $\vX'\ve=\mathbf 0$, soit, pour chaque régresseur $j$ :
+\[
+\sumi x_{j,i}\,e_i=0\qquad\Longrightarrow\qquad \frac1n\sumi x_{j,i}\,e_i=0,\quad j=1,2 .
+\]
+C'est vrai \textbf{par construction}, quelles que soient les données et que le modèle soit bon ou mauvais. (Remarque : le modèle (1) n'a pas de constante, mais l'orthogonalité tient pour tous les régresseurs inclus ; seule $\sum e_i=0$ n'est plus garantie.)
+
+\begin{reponse}
+\textbf{Faux.} L'orthogonalité entre résidus et régresseurs est une propriété numérique des MCO : les résidus sont \emph{choisis} pour être orthogonaux à $x_1$ et $x_2$. Elle serait observée même si les erreurs étaient fortement corrélées avec les régresseurs (variable omise, simultanéité, erreur de mesure).
+
+L'hypothèse du modèle classique porte sur les \textbf{erreurs} $\epsilon_i$, inobservables, et non sur les résidus $e_i$ : $\E[\epsilon\mid x_1,x_2]=0$ (ou l'indépendance) ne peut pas être vérifiée de cette façon. Elle doit se justifier par un argument économique ou par le dispositif de collecte des données. De plus, orthogonalité (corrélation nulle) n'est pas indépendance.
+\end{reponse}
+
+\subsection*{(c) Mêmes coefficients pour (2) $\vy=\vX\vbeta+\veps$ et (3) $\Pm_x\vy=\vX\vbeta+\veps$ ?}
+
+\begin{idee}
+Le modèle (3) régresse $\Pm_x\vy=\hat{\vy}$ (les valeurs prédites de (2)) sur les mêmes régresseurs $\vX=(\vX_1\ \vX_2)$. On applique la formule des MCO et les propriétés de $\Pm_x$ : symétrique, idempotente, $\Pm_x\vX=\vX$.
+\end{idee}
+
+\[
+\vb_{(3)}=(\vX'\vX)^{-1}\vX'(\Pm_x\vy)=(\vX'\vX)^{-1}(\Pm_x\vX)'\vy=(\vX'\vX)^{-1}\vX'\vy=\vb_{(2)},
+\]
+car $\vX'\Pm_x=\vX'\Pm_x'=(\Pm_x\vX)'=\vX'$.
+
+\begin{reponse}
+\textbf{Vrai.} Les deux régressions donnent exactement les mêmes coefficients ($\vb_1$ et $\vb_2$). Intuition : $\Pm_x\vy$ est la partie de $\vy$ « expliquée » par $\vX$. Retirer à $\vy$ la partie que $\vX$ ne peut pas expliquer ($\Mm_x\vy$, orthogonale à $\vX$) ne change pas ce que $\vX$ explique : $\vX'\vy=\vX'\Pm_x\vy+\vX'\Mm_x\vy=\vX'\Pm_x\vy$.
+\end{reponse}
+
+\subsection*{(d) Mêmes résidus pour (2) et (3) ?}
+
+Avec les mêmes coefficients (question c) :
+\[
+\ve_{(2)}=\vy-\vX\vb=\Mm_x\vy,\qquad
+\ve_{(3)}=\Pm_x\vy-\vX\vb=\Pm_x\vy-\Pm_x\vy=\mathbf 0 .
+\]
+
+\begin{reponse}
+\textbf{Faux.} Les résidus de (3) sont tous nuls : $\Pm_x\vy$ appartient à l'espace engendré par les colonnes de $\vX$, donc il est expliqué parfaitement ($R^2=1$). Les résidus de (2) valent $\Mm_x\vy$, qui n'est nul que dans le cas sans intérêt où $\vy$ est exactement une combinaison linéaire des colonnes de $\vX$.
+
+Conséquence pratique : même si les coefficients de (3) sont identiques, ses écarts-types (calculés avec $s^2=\ve'\ve/(n-K)=0$) seraient nuls et donc complètement faux.
+\end{reponse}
+
+% =====================================================================
+\section{Question 2 : l'estimateur $\tb=(\vZ'\vX)^{-1}\vZ'\vy$ (20 points)}
+% =====================================================================
+
+Hypothèses : $\vy=\vX\vbeta+\veps$, $\E[\veps\mid\vX,\vZ]=\mathbf 0$, et $\vZ'\vX$ ($K\times K$) définie positive, donc inversible. (C'est la forme de l'estimateur des \emph{variables instrumentales}, Greene ch. 8.)
+
+\subsection*{(a) $\tb$ est sans biais}
+
+\begin{idee}
+Même démarche que pour les MCO : remplacer $\vy$ par $\vX\vbeta+\veps$, écrire $\tb=\vbeta+(\text{poids})\times\veps$, puis prendre l'espérance conditionnelle à $(\vX,\vZ)$.
+\end{idee}
+
+\textbf{Étape 1 : écrire $\tb$ en fonction de l'erreur.}
+\[
+\tb=(\vZ'\vX)^{-1}\vZ'(\vX\vbeta+\veps)=\underbrace{(\vZ'\vX)^{-1}\vZ'\vX}_{\I_K}\vbeta+(\vZ'\vX)^{-1}\vZ'\veps=\vbeta+(\vZ'\vX)^{-1}\vZ'\veps .
+\]
+\textbf{Étape 2 : espérance conditionnelle.} Sachant $(\vX,\vZ)$, la matrice $(\vZ'\vX)^{-1}\vZ'$ est une constante :
+\[
+\E[\tb\mid\vX,\vZ]=\vbeta+(\vZ'\vX)^{-1}\vZ'\,\E[\veps\mid\vX,\vZ]=\vbeta+\mathbf 0=\vbeta .
+\]
+\textbf{Étape 3 : loi des espérances itérées.} $\E[\tb]=\E\big[\E[\tb\mid\vX,\vZ]\big]=\vbeta$.
+
+\begin{reponse}
+$\E[\tb]=\vbeta$ : $\tb$ est sans biais. On a utilisé l'inversibilité de $\vZ'\vX$ (pour que $\tb$ existe et que $(\vZ'\vX)^{-1}\vZ'\vX=\I_K$) et $\E[\veps\mid\vX,\vZ]=\mathbf 0$.
+\end{reponse}
+
+\subsection*{(b) $\tb$ est inefficace par rapport aux MCO}
+
+\begin{idee}
+$\tb=\C\vy$ est un estimateur \emph{linéaire} (en $\vy$) et \emph{sans biais}. Sous homoscédasticité, le théorème de Gauss-Markov dit que les MCO ont la plus petite variance parmi ces estimateurs. On refait la preuve du cours avec $\C=(\vZ'\vX)^{-1}\vZ'$.
+\end{idee}
+
+\textbf{Étape 1 : variance de $\tb$.} Avec $\tb-\vbeta=(\vZ'\vX)^{-1}\vZ'\veps$ et $\E[\veps\veps'\mid\vX,\vZ]=\sigma^2\I_n$ :
+\[
+\Var(\tb\mid\vX,\vZ)=(\vZ'\vX)^{-1}\vZ'\,\E[\veps\veps'\mid\vX,\vZ]\,\vZ(\vX'\vZ)^{-1}=\sigma^2(\vZ'\vX)^{-1}\vZ'\vZ(\vX'\vZ)^{-1}.
+\]
+\textbf{Étape 2 : variance des MCO.} Comme $\E[\veps\mid\vX,\vZ]=\mathbf 0$ et $\E[\veps\veps'\mid\vX,\vZ]=\sigma^2\I_n$, la formule du cours donne, conditionnellement à $(\vX,\vZ)$ : $\Var(\vb\mid\vX,\vZ)=\sigma^2(\vX'\vX)^{-1}$.
+
+\textbf{Étape 3 : écrire $\C$ comme « MCO + écart ».} Soit $\C=(\vZ'\vX)^{-1}\vZ'$ et $\D=\C-(\vX'\vX)^{-1}\vX'$. Comme $\C\vX=\I_K$ :
+\[
+\D\vX=\C\vX-(\vX'\vX)^{-1}\vX'\vX=\I_K-\I_K=\mathbf 0 .
+\]
+\textbf{Étape 4 : comparaison.} $\Var(\tb\mid\vX,\vZ)=\sigma^2\C\C'$ et
+\[
+\C\C'=\big(\D+(\vX'\vX)^{-1}\vX'\big)\big(\D'+\vX(\vX'\vX)^{-1}\big)
+=\D\D'+\underbrace{\D\vX}_{\mathbf 0}(\vX'\vX)^{-1}+(\vX'\vX)^{-1}\underbrace{\vX'\D'}_{\mathbf 0}+(\vX'\vX)^{-1}.
+\]
+Donc
+\[
+\Var(\tb\mid\vX,\vZ)=\sigma^2(\vX'\vX)^{-1}+\sigma^2\D\D'=\Var(\vb\mid\vX,\vZ)+\sigma^2\D\D' .
+\]
+$\D\D'$ est semi-définie positive ($\mathbf c'\D\D'\mathbf c=\|\D'\mathbf c\|^2\ge0$).
+
+\begin{reponse}
+$\Var(\tb\mid\vX,\vZ)-\Var(\vb\mid\vX,\vZ)=\sigma^2\D\D'$ est semi-définie positive : chaque coefficient (et toute combinaison linéaire $\mathbf c'\vbeta$) est estimé avec une variance au moins aussi grande par $\tb$ que par les MCO. $\tb$ est donc \textbf{inefficace relativement aux MCO}. L'égalité n'a lieu que si $\D=\mathbf 0$, c'est-à-dire si $\tb=\vb$ (par exemple si $\vZ=\vX\A$ avec $\A$ inversible).
+\end{reponse}
+
+\textbf{Autre démonstration (plus directe).} On compare les inverses des variances :
+\[
+\Var(\tb)^{-1}=\frac1{\sigma^2}\vX'\vZ(\vZ'\vZ)^{-1}\vZ'\vX=\frac1{\sigma^2}\vX'\Pm_Z\vX,
+\qquad
+\Var(\vb)^{-1}=\frac1{\sigma^2}\vX'\vX .
+\]
+$\vX'\vX-\vX'\Pm_Z\vX=\vX'\Mm_Z\vX=(\Mm_Z\vX)'(\Mm_Z\vX)$ est semi-définie positive, donc $\Var(\vb)^{-1}\ge\Var(\tb)^{-1}$, et en inversant (l'inversion renverse l'ordre des matrices définies positives), $\Var(\vb)\le\Var(\tb)$.
+
+\begin{intuition}
+$\tb$ n'utilise que la partie de la variation de $\vX$ qui est corrélée avec $\vZ$ ($\Pm_Z\vX$) ; il « jette » la partie $\Mm_Z\vX$. Quand $\vX$ est exogène (ici $\E[\veps\mid\vX]=\mathbf 0$), cette partie jetée est de l'information utile : les MCO l'exploitent, d'où leur plus grande précision. L'estimateur à variables instrumentales n'est intéressant que lorsque $\vX$ est \emph{endogène} : les MCO sont alors biaisés, et l'on accepte une variance plus grande en échange de l'absence de biais (asymptotique).
+\end{intuition}
+
+% =====================================================================
+\section{Question 3 : prime salariale du secteur privé (20 points)}
+% =====================================================================
+
+\subsection*{(a) Différence de salaire constante}
+
+\textbf{Variables.}
+\begin{itemize}[nosep]
+\item $w_i$ : salaire annuel de l'individu $i$ (travailleur à temps plein, Québec, 2010) ; on utilise $\ln w_i$, de sorte que les coefficients se lisent en pourcentages ;
+\item $educ_i$ : années d'éducation ; $exper_i$ : années d'expérience ;
+\item $prive_i=1$ si l'individu travaille dans le secteur privé, 0 s'il travaille dans le secteur public (catégorie de référence).
+\end{itemize}
+
+\textbf{Modèle.}
+\[
+\ln w_i=\beta_0+\beta_1\,educ_i+\beta_2\,exper_i+\delta\,prive_i+\epsilon_i,\qquad \E[\epsilon_i\mid educ_i,exper_i,prive_i]=0 .
+\]
+Dans le public, la constante est $\beta_0$ ; dans le privé, elle est $\beta_0+\delta$. Les pentes sont communes : la différence de salaire $\delta$ est la même à tous les niveaux d'éducation et d'expérience (droites parallèles). On peut ajouter $exper_i^2$ pour tenir compte de la concavité du profil salarial ; cela ne change pas le test.
+
+\textbf{Test.} $H_0:\delta=0$ (pas de différence, à éducation et expérience égales) contre $H_a:\delta\neq0$.
+\begin{enumerate}[nosep]
+\item Estimer le modèle par MCO.
+\item Calculer $t=\hat\delta/\text{e.t.}(\hat\delta)$, qui suit sous $H_0$ une loi de Student à $n-4$ degrés de liberté (exactement sous normalité, approximativement sinon).
+\item Rejeter $H_0$ au seuil de 5\,\% si $|t|>t_{0{,}975;\,n-4}\approx1{,}96$, ou si la $p$-value est inférieure à 0,05.
+\end{enumerate}
+Pour tester spécifiquement une \emph{prime} pour le privé, on peut faire un test unilatéral $H_a:\delta>0$ (rejet si $t>1{,}645$).
+
+\begin{reponse}
+Interprétation : $\hat\delta\approx$ différence de salaire en \% entre privé et public à éducation et expérience égales (exactement $100(e^{\hat\delta}-1)\,\%$). On conclut à une différence (ou à une prime si $\hat\delta>0$) si $H_0:\delta=0$ est rejetée.
+\end{reponse}
+
+\subsection*{(b) Effets de l'éducation et de l'expérience différents selon le secteur}
+
+\textbf{Modèle avec interactions.}
+\[
+\ln w_i=\beta_0+\beta_1 educ_i+\beta_2 exper_i+\delta_0\,prive_i+\delta_1\,(prive_i\times educ_i)+\delta_2\,(prive_i\times exper_i)+\epsilon_i .
+\]
+Rendement de l'éducation : $\beta_1$ dans le public, $\beta_1+\delta_1$ dans le privé ; rendement de l'expérience : $\beta_2$ dans le public, $\beta_2+\delta_2$ dans le privé.
+
+\textbf{Test.} $H_0:\delta_1=\delta_2=0$ (mêmes effets dans les deux secteurs) contre $H_a$ : au moins un $\delta_j\neq0$. C'est une hypothèse \textbf{jointe} (2 restrictions) : on utilise un test $F$.
+\begin{enumerate}[nosep]
+\item Estimer le modèle non contraint (ci-dessus) : SCE$_{NC}$, avec $n-6$ degrés de liberté.
+\item Estimer le modèle contraint (celui de (a), sans les interactions) : SCE$_C$.
+\item Calculer
+\[
+F=\frac{(\text{SCE}_C-\text{SCE}_{NC})/2}{\text{SCE}_{NC}/(n-6)}\ \sim\ F(2,\,n-6)\ \text{sous } H_0 .
+\]
+\item Rejeter $H_0$ si $F>F_{0{,}95;\,2;\,n-6}\approx3{,}0$ (ou $p<0{,}05$). En Stata : \texttt{test 1.prive\#c.educ 1.prive\#c.exper}.
+\end{enumerate}
+\textbf{Remarque.} Si l'on veut tester que les deux marchés sont \emph{entièrement} identiques (constante comprise), on teste $\delta_0=\delta_1=\delta_2=0$ (3 restrictions) : c'est le test de Chow.
+
+\subsection*{(c) Même somme des effets de l'éducation et de l'expérience : test $t$}
+
+\begin{idee}
+Traduire l'hypothèse en une \emph{combinaison linéaire} des coefficients, puis soit calculer son écart-type avec la covariance, soit reparamétrer pour que la combinaison devienne un coefficient du modèle.
+\end{idee}
+
+\textbf{L'hypothèse.} Somme des effets dans le public : $\beta_1+\beta_2$ ; dans le privé : $(\beta_1+\delta_1)+(\beta_2+\delta_2)$. Égalité $\iff$
+\[
+H_0:\ \theta\equiv\delta_1+\delta_2=0\qquad\text{contre}\qquad H_a:\ \delta_1+\delta_2\neq0 .
+\]
+C'est une seule restriction linéaire : un test $t$ convient.
+
+\textbf{Méthode 1 : écart-type de la combinaison linéaire.} Dans le modèle de (b) :
+\[
+t=\frac{\hat\delta_1+\hat\delta_2}{\text{e.t.}(\hat\delta_1+\hat\delta_2)},\qquad
+\text{e.t.}(\hat\delta_1+\hat\delta_2)=\sqrt{\widehat{\Var}(\hat\delta_1)+\widehat{\Var}(\hat\delta_2)+2\,\widehat{\Cov}(\hat\delta_1,\hat\delta_2)} .
+\]
+Les variances et la covariance se lisent dans la matrice $s^2(\vX'\vX)^{-1}$ (\texttt{estat vce} dans Stata). \textbf{Ne pas oublier la covariance} : $\hat\delta_1$ et $\hat\delta_2$ sont estimés sur les mêmes données et sont corrélés. Sous $H_0$, $t\sim t(n-6)$ ; on rejette si $|t|>1{,}96$ environ. (En Stata : \texttt{lincom 1.prive\#c.educ + 1.prive\#c.exper}.)
+
+\textbf{Méthode 2 : reparamétrisation.} On pose $\delta_1=\theta-\delta_2$ et on substitue :
+\[
+\delta_1(prive\times educ)+\delta_2(prive\times exper)
+=\theta\,(prive\times educ)+\delta_2\,\big(prive\times exper-prive\times educ\big).
+\]
+On estime donc
+\[
+\ln w_i=\beta_0+\beta_1 educ_i+\beta_2 exper_i+\delta_0 prive_i+\theta\,(prive_i\, educ_i)+\delta_2\,\big[prive_i(exper_i-educ_i)\big]+\epsilon_i .
+\]
+Le coefficient de $prive\times educ$ est directement $\theta=\delta_1+\delta_2$ : la ligne correspondante du tableau de régression donne $\hat\theta$, son écart-type, la statistique $t$ et la $p$-value du test.
+
+\begin{reponse}
+$H_0:\delta_1+\delta_2=0$, testé par $t=(\hat\delta_1+\hat\delta_2)/\text{e.t.}(\hat\delta_1+\hat\delta_2)\sim t(n-6)$, l'écart-type incluant $2\widehat{\Cov}(\hat\delta_1,\hat\delta_2)$ ; ou, de façon équivalente, par le $t$ du coefficient de $prive\times educ$ dans le modèle reparamétré. Les deux méthodes donnent exactement la même statistique.
+\end{reponse}
+
+% =====================================================================
+\section{Question 4 : variable non pertinente et Monte Carlo (25 points)}
+% =====================================================================
+
+Le vrai modèle est (4) : $y_i=\beta_0+\beta_1x_{1,i}+\epsilon_i$, $\epsilon_i\sim N(0,\sigma^2)$. On estime (5), qui contient en plus $x_{2,i}$.
+
+\subsection*{(a) Étapes de l'étude de Monte Carlo et biais attendu}
+
+\textbf{Les étapes.}
+\begin{enumerate}
+\item \textbf{Fixer le « monde » simulé} : choisir des valeurs pour $\beta_0$, $\beta_1$, $\sigma^2$ (par ex. $\beta_0=2$, $\beta_1=1$, $\sigma^2=1$), la taille d'échantillon $n$ (par ex. 250) et le nombre de répétitions $R$ (par ex. 1000 ou 10\,000). Fixer la graine (\texttt{set seed}) pour pouvoir reproduire les résultats.
+\item \textbf{Générer les régresseurs une seule fois} : $x_{1,i}$ (par ex. $N(0,1)$) et la variable non pertinente $x_{2,i}$, de préférence \emph{corrélée} avec $x_1$ pour que l'expérience soit intéressante (par ex. $x_{2,i}=\gamma x_{1,i}+\eta_i$, $\eta_i\sim N(0,1)$, $\gamma=0{,}5$). Elles restent fixes d'une répétition à l'autre (on étudie les propriétés conditionnelles à $\vX$), et sont générées indépendamment des erreurs.
+\item \textbf{Pour chaque répétition $r=1,\dots,R$} :
+\begin{enumerate}[nosep]
+\item tirer de nouvelles erreurs $\epsilon_i^{(r)}\sim N(0,\sigma^2)$ ;
+\item générer $y_i^{(r)}=\beta_0+\beta_1x_{1,i}+\epsilon_i^{(r)}$ avec le \textbf{vrai} modèle (4), donc sans $x_2$ ;
+\item estimer par MCO le modèle (5) : $y^{(r)}$ sur une constante, $x_1$ et $x_2$ ;
+\item sauvegarder $b_1^{(r)}$, son écart-type, $b_2^{(r)}$ et la statistique $t$ de $\beta_2$ (pour la partie b).
+\end{enumerate}
+\item \textbf{Analyser les $R$ estimations} : moyenne $\bar b_1=\frac1R\sum_rb_1^{(r)}$ comparée à $\beta_1$ (biais estimé $\bar b_1-\beta_1$, à juger par rapport à l'erreur de simulation $\text{e.t.}(b_1)/\sqrt R$, ou par un test $t$ de $H_0:\E[b_1]=\beta_1$) ; écart-type des $b_1^{(r)}$ (précision) ; histogramme (loi). Idéalement, comparer avec les estimations du modèle correct (4) sur les mêmes échantillons.
+\end{enumerate}
+
+\textbf{Ce que l'on attend : $b_1$ sans biais. Démonstration formelle.}
+
+Le modèle estimé (5) s'écrit $\vy=\vX\vbeta+\veps$ avec $\vX=(\vi\ \vx_1\ \vx_2)$ et $\vbeta=(\beta_0,\beta_1,\beta_2)'$. Puisque (4) a généré les données, (5) est le vrai modèle avec $\beta_2=0$ : $\vbeta=(\beta_0,\beta_1,0)'$. Alors
+\[
+\vb=(\vX'\vX)^{-1}\vX'\vy=(\vX'\vX)^{-1}\vX'(\vX\vbeta+\veps)=\vbeta+(\vX'\vX)^{-1}\vX'\veps,
+\]
+\[
+\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\E[\veps\mid\vX]=\vbeta ,
+\]
+car $\E[\veps\mid\vx_1,\vx_2]=\mathbf 0$ ($x_2$ est généré indépendamment des erreurs). En lisant la deuxième composante : $\E[b_1\mid\vX]=\beta_1$, et $\E[b_2\mid\vX]=0$.
+
+\textit{Version par FWL.} Soit $\Mm_2$ la matrice qui crée les résidus d'une régression sur $(\vi\ \vx_2)$. Par FWL, $b_1=(\vx_1'\Mm_2\vx_1)^{-1}\vx_1'\Mm_2\vy$. Comme $\vy=\vi\beta_0+\vx_1\beta_1+\veps$ et $\Mm_2\vi=\mathbf 0$ :
+\[
+b_1=\beta_1+\frac{\vx_1'\Mm_2\veps}{\vx_1'\Mm_2\vx_1}
+\quad\Longrightarrow\quad \E[b_1\mid\vX]=\beta_1 .
+\]
+
+\begin{reponse}
+On s'attend à ce que la moyenne des $b_1^{(r)}$ soit statistiquement indiscernable de $\beta_1$ : \textbf{inclure une variable non pertinente ne biaise pas $b_1$}, car le modèle (5) reste correctement spécifié ($\beta_2=0$, $\E[\veps\mid\vX]=\mathbf 0$).
+
+En revanche, on s'attend à une \textbf{variance plus grande} que dans le modèle correct si $x_1$ et $x_2$ sont corrélés :
+\[
+\Var(b_1\mid\vX)=\frac{\sigma^2}{\sum(x_{1,i}-\bar x_1)^2\,(1-r_{12}^2)}\ \ge\ \frac{\sigma^2}{\sum(x_{1,i}-\bar x_1)^2},
+\]
+où $r_{12}$ est la corrélation empirique entre $x_1$ et $x_2$ : c'est une perte d'efficacité, pas un biais. (À l'inverse, \emph{omettre} une variable pertinente corrélée avec $x_1$ créerait un biais.)
+\end{reponse}
+
+\subsection*{(b) Proportion de rejets de $H_0:\beta_2=0$}
+
+\begin{reponse}
+On s'attend à rejeter $H_0$ dans environ \textbf{5\,\% des échantillons} (si le test est fait au seuil $\alpha=5\,\%$), c'est-à-dire dans une proportion égale à $\alpha$.
+
+\textbf{Explication.} Les données sont générées par (4), donc $H_0:\beta_2=0$ est \emph{vraie}. Sous $H_0$ et avec des erreurs normales, $t=b_2/\text{e.t.}(b_2)$ suit exactement une loi de Student à $n-3$ degrés de liberté. Par définition de la valeur critique, $P(|t|>t_{0{,}975;\,n-3}\mid H_0)=0{,}05$. Le niveau $\alpha$ est la probabilité d'une \textbf{erreur de type I} (rejeter une hypothèse vraie). Chaque rejet est ici un « faux positif ».
+
+Sur $R$ répétitions, le nombre de rejets suit une loi binomiale $(R;\,0{,}05)$ : avec $R=1000$, on s'attend à environ 50 rejets, la proportion observée fluctuant typiquement dans $0{,}05\pm1{,}96\sqrt{0{,}05\times0{,}95/1000}=[3{,}6\,\%;\ 6{,}4\,\%]$.
+\end{reponse}
+
+\begin{attention}
+L'énoncé de (b) renvoie au « Monte Carlo en (b) » : il s'agit de celui de la partie (a).
+\end{attention}
+
+% =====================================================================
+\section{Question 5 : éducation et salaires (15 points)}
+% =====================================================================
+
+Modèle : $y_i=\beta_0+\beta_1educ_i+\beta_2exper_i+\beta_3expersq_i+\epsilon_i$, $n=1000$.
+
+\begin{attention}[title={Unité de $y$}]
+L'énoncé dit que $y_i$ est le salaire annuel. L'ordre de grandeur des coefficients (0,085 pour l'éducation, constante 0,39) est typique d'une régression où la variable dépendante est le \textbf{logarithme} du salaire. On donne l'interprétation dans les deux cas : en niveau, l'effet est en unités de $y$ ; en log, il est (approximativement) en pourcentage. À adapter selon la définition retenue par le professeur.
+\end{attention}
+
+\subsection*{(a) Interprétation de $\hat\beta_1=0{,}085$}
+
+$\beta_1=\partial y/\partial educ$ \emph{à expérience constante} : la variation de $y$ associée à une année d'éducation supplémentaire, toutes choses égales par ailleurs (même expérience).
+
+\begin{reponse}
+\begin{itemize}[nosep]
+\item Si $y$ est le salaire en niveau : une année d'études de plus est associée à un salaire annuel plus élevé de 0,085 unité de $y$ (par ex. 85 \$ si $y$ est en milliers de dollars), à expérience égale.
+\item Si $y=\ln(\text{salaire})$ : une année d'études de plus est associée à un salaire plus élevé d'environ \textbf{8,5\,\%} (exactement $e^{0{,}085}-1=8{,}9\,\%$), à expérience égale. C'est le « rendement de l'éducation ».
+\end{itemize}
+« À expérience égale » vient de la régression multiple (théorème FWL) : $\hat\beta_1$ n'utilise que la variation de l'éducation non expliquée par l'expérience. C'est une \textbf{association} : si l'habileté (dans $\epsilon$) est corrélée à l'éducation, $\hat\beta_1$ est biaisé et ne mesure pas un effet causal.
+\end{reponse}
+
+\subsection*{(b) Effet de l'expérience}
+
+\begin{idee}
+L'expérience entre deux fois dans le modèle ($exper$ et $exper^2$) : son effet n'est pas un seul coefficient, c'est une \emph{dérivée} qui dépend du niveau d'expérience.
+\end{idee}
+
+\[
+\frac{\partial y}{\partial exper}=\hat\beta_2+2\hat\beta_3\,exper=0{,}033764-2(0{,}000661)\,exper=0{,}033764-0{,}001322\,exper .
+\]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Expérience (années) & 0 & 5 & 10 & 20 & 25 & 30 \\
+\midrule
+Effet marginal $\partial y/\partial exper$ & 0,0338 & 0,0272 & 0,0205 & 0,0073 & 0,0007 & $-0{,}0059$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Point de retournement} : l'effet s'annule quand $0{,}033764-0{,}001322\,exper=0$, soit
+\[
+exper^*=\frac{\hat\beta_2}{-2\hat\beta_3}=\frac{0{,}033764}{2\times0{,}000661}\approx25{,}5\text{ ans}.
+\]
+
+\begin{reponse}
+L'effet de l'expérience est \textbf{positif mais décroissant} (profil concave, car $\hat\beta_3<0$, très significatif : $t=-7{,}38$) :
+\begin{itemize}[nosep]
+\item la première année d'expérience augmente $y$ d'environ 0,034 (soit $\approx3{,}4\,\%$ si $y$ est en log) ;
+\item à 10 ans d'expérience, une année de plus n'apporte plus que $\approx2{,}1\,\%$ ;
+\item l'effet devient nul vers 25,5 ans d'expérience, puis \textbf{négatif} au-delà.
+\end{itemize}
+Est-il positif ? \textbf{Oui pour l'essentiel des travailleurs} (moins de 25,5 ans d'expérience), non pour les plus expérimentés. Le négatif au-delà de 25,5 ans reflète en partie la forme quadratique imposée et peut concerner peu d'observations. Les deux termes sont individuellement très significatifs ($t=8{,}22$ et $-7{,}38$) ; pour tester que l'expérience n'a aucun effet, il faudrait tester conjointement $\beta_2=\beta_3=0$ (test $F$).
+\end{reponse}
+
+\subsection*{(c) $p$-value du coefficient de l'éducation}
+
+$t=\hat\beta_1/\text{e.t.}(\hat\beta_1)=0{,}085/0{,}04=2{,}125$, avec $n-K=1000-4=996$ degrés de liberté.
+
+\begin{reponse}
+\textbf{Interprétation de la $p$-value (0,036)} : si le vrai coefficient était nul ($H_0:\beta_1=0$), la probabilité d'obtenir une statistique $t$ au moins aussi grande en valeur absolue que celle observée ($|t|\ge2{,}125$) serait d'environ 3,6\,\%. C'est aussi le plus petit seuil auquel on rejetterait $H_0$.
+
+\textbf{Décision} :
+\begin{itemize}[nosep]
+\item au seuil de \textbf{5\,\%} : $0{,}036<0{,}05$ (et $|t|=2{,}125>1{,}962$), on \textbf{rejette} $H_0$ : l'éducation a un effet statistiquement significatif ;
+\item au seuil de 10\,\% : on rejette aussi ;
+\item au seuil de \textbf{1\,\%} : $0{,}036>0{,}01$ (et $2{,}125<2{,}581$), on \textbf{ne rejette pas} $H_0$.
+\end{itemize}
+La conclusion dépend donc du seuil choisi ; au seuil conventionnel de 5\,\%, on rejette $\beta_1=0$.
+
+Nuances : la $p$-value n'est pas la probabilité que $H_0$ soit vraie. Et significatif ne veut pas dire précis : l'écart-type (0,04) est grand, l'intervalle de confiance à 95\,\% est $0{,}085\pm1{,}96\times0{,}04=[0{,}007\ ;\ 0{,}163]$.
+\end{reponse}
+
+\begin{attention}
+Recalculée à partir des valeurs arrondies du tableau, la $p$-value vaut $2P(T_{996}>2{,}125)\approx0{,}034$ ; l'écart avec 0,036 vient des arrondis du coefficient et de l'écart-type. La conclusion est la même.
+\end{attention}
+
+\end{document}
