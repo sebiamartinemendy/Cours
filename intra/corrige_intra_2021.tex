@@ -1,0 +1,401 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-6025 -- Examen intra, automne 2021}\rhead{\small Corrigé détaillé}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vZ}{\mathbf{Z}}
+\newcommand{\ve}{\mathbf{e}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\vi}{\bm{\iota}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\Pm}{\mathbf{P}}\newcommand{\Mm}{\mathbf{M}}
+\newcommand{\tb}{\tilde{\mathbf{b}}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\plim}{\operatorname{plim}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démarche},#1}
+\newtcolorbox{reponse}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Réponse},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Examen intra ECN-6025 (automne 2021)}\\[6pt]
+{\large Corrigé détaillé, démarche pas à pas}\\[4pt]
+{\small Références : notes du chapitre 2 (MCO) ; W. H. Greene, \emph{Econometric Analysis}, ch. 3 à 5 et 8}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=NavyBlue,title=Comment lire ce corrigé]
+Pour chaque question : l'\textbf{idée de la démarche}, le \textbf{calcul ou l'argument complet}, la \textbf{réponse} encadrée et, quand c'est utile, une \textbf{intuition}. Pour les « vrai, faux ou incertain », la note dépend de l'explication : on donne toujours l'argument qui justifie la réponse.
+\end{tcolorbox}
+
+\tableofcontents
+
+% =====================================================================
+\section{Question 1 : vrai, faux ou incertain (25 points)}
+% =====================================================================
+
+\subsection*{(a) $\frac1n\sum e_i=0$ forcément ?}
+
+\begin{idee}
+Les équations normales des MCO imposent $\vX'\ve=\mathbf 0$. La question est de savoir si l'une des colonnes de $\vX$ est la colonne de 1.
+\end{idee}
+
+Le modèle contient une constante $\beta_0$, donc la première colonne de $\vX$ est $\vi=(1,\dots,1)'$. La première équation normale s'écrit
+\[
+\vi'\ve=\sumi e_i=0\qquad\Longrightarrow\qquad \frac1n\sumi e_i=0 .
+\]
+
+\begin{reponse}
+\textbf{Vrai.} C'est une propriété \emph{numérique} des MCO : dès que le modèle contient une constante, la condition du premier ordre par rapport à $\beta_0$, $-2\sum(y_i-b_0-b_1x_{1,i}-b_2x_{2,i})=0$, impose que les résidus somment à zéro. C'est vrai pour n'importe quelles données, que les hypothèses du modèle soient vérifiées ou non.
+
+Remarque : sans constante, ce ne serait plus garanti (seule l'orthogonalité $\sum x_{j,i}e_i=0$ aux régresseurs inclus le serait). Et ce résultat ne dit rien sur $\E[\epsilon]$ : ce sont les \emph{résidus}, pas les erreurs.
+\end{reponse}
+
+\subsection*{(b) $\E[\epsilon_i\mid X]=\mu<0$ : biais vers le bas pour $\beta_0$ et $\beta_1$ ?}
+
+\begin{idee}
+Réécrire le modèle avec une erreur de moyenne nulle, $u_i=\epsilon_i-\mu$, et voir quel coefficient « absorbe » $\mu$.
+\end{idee}
+
+Posons $u_i=\epsilon_i-\mu$, de sorte que $\E[u_i\mid X]=0$. Alors
+\[
+y_i=\beta_0+\beta_1x_{1,i}+\mu+u_i=\underbrace{(\beta_0+\mu)}_{\text{nouvelle constante}}+\beta_1x_{1,i}+u_i .
+\]
+Ce modèle satisfait l'exogénéité, donc les MCO estiment sans biais ses coefficients :
+\[
+\E[b_0]=\beta_0+\mu<\beta_0,\qquad \E[b_1]=\beta_1 .
+\]
+Calcul direct pour la pente : $b_1=\beta_1+\dfrac{\sum(x_{1,i}-\bar x_1)\epsilon_i}{\sum(x_{1,i}-\bar x_1)^2}$, donc
+$\E[b_1\mid X]=\beta_1+\dfrac{\mu\sum(x_{1,i}-\bar x_1)}{\sum(x_{1,i}-\bar x_1)^2}=\beta_1+0$, car $\sum(x_{1,i}-\bar x_1)=0$.
+
+\begin{reponse}
+\textbf{Faux.} Seule la constante est biaisée vers le bas ($\E[b_0]=\beta_0+\mu$, biais $\mu<0$). La pente $b_1$ reste \textbf{sans biais} : une erreur de moyenne \emph{constante} déplace la droite verticalement sans changer sa pente. Ce qui biaiserait $b_1$, c'est une moyenne conditionnelle qui \emph{varie avec} $x_1$ (par exemple $\E[\epsilon_i\mid X]=\alpha_0+\alpha_1x_{1,i}$ avec $\alpha_1\ne0$ ; voir le devoir 1, question 1(c)). La normalité ne joue aucun rôle dans ce raisonnement.
+\end{reponse}
+
+\subsection*{(c) Même $\vb_2$ pour (1) $\vy=\vX_1\vbeta_1+\vX_2\vbeta_2+\veps$ et (2) $\Pm_x\vy=\vX_2\vbeta_2+\veps$ ?}
+
+\begin{idee}
+Dans (2), on régresse $\Pm_x\vy=\hat{\vy}$ sur $\vX_2$ \textbf{seulement} : $\vX_1$ a été retiré des régresseurs. On calcule l'estimateur de (2) et on le compare à celui de (1).
+\end{idee}
+
+Notons $\vb_1,\vb_2$ les estimateurs de (1). Alors $\Pm_x\vy=\vX\vb=\vX_1\vb_1+\vX_2\vb_2$. L'estimateur de (2) est
+\[
+\vb_2^{(2)}=(\vX_2'\vX_2)^{-1}\vX_2'\Pm_x\vy=(\vX_2'\vX_2)^{-1}\vX_2'(\vX_1\vb_1+\vX_2\vb_2)
+=\vb_2+(\vX_2'\vX_2)^{-1}\vX_2'\vX_1\,\vb_1 .
+\]
+(On peut aussi noter que $\vX_2'\Pm_x=\vX_2'$, car $\Pm_x\vX_2=\vX_2$ : donc $\vb_2^{(2)}=(\vX_2'\vX_2)^{-1}\vX_2'\vy$, c'est-à-dire l'estimateur de la régression « courte » de $\vy$ sur $\vX_2$ seul.)
+
+\begin{reponse}
+\textbf{Incertain (faux en général).} $\vb_2^{(2)}=\vb_2+(\vX_2'\vX_2)^{-1}\vX_2'\vX_1\vb_1$. Les deux estimateurs sont identiques seulement si $\vX_2'\vX_1\vb_1=\mathbf 0$, par exemple :
+\begin{itemize}[nosep]
+\item si $\vX_1$ et $\vX_2$ sont orthogonaux ($\vX_1'\vX_2=\mathbf 0$) ;
+\item ou si $\vb_1=\mathbf 0$.
+\end{itemize}
+Sinon, ils diffèrent : le modèle (2) revient à omettre $\vX_1$, et l'écart est exactement la formule du biais de variable omise (version numérique). À comparer avec l'intra 2020, où $\Pm_x\vy$ était régressé sur \emph{tout} $\vX$ : là, les coefficients étaient identiques.
+\end{reponse}
+
+\subsection*{(d) $b_1=1$ dans l'échantillon, donc $\beta_1=1$ ?}
+
+\begin{reponse}
+\textbf{Faux.} « Sans biais » signifie $\E[b_1]=\beta_1$ : \emph{en moyenne sur des échantillons répétés}, l'estimateur tombe sur la vraie valeur. Dans un échantillon donné, $b_1=\beta_1+\dfrac{\sum(x_{1,i}-\bar x_1)\epsilon_i}{\sum(x_{1,i}-\bar x_1)^2}$ contient une erreur d'échantillonnage aléatoire, de variance $\sigma^2/\sum(x_{1,i}-\bar x_1)^2>0$. L'estimation 1 est une réalisation d'une variable aléatoire ; avec des erreurs normales (loi continue), $P(b_1=\beta_1)=0$.
+
+Ce que l'on peut dire de $\beta_1$ : construire un intervalle de confiance, $1\pm t_{0{,}975;\,n-2}\,\text{e.t.}(b_1)$, ou tester des hypothèses sur $\beta_1$. L'étude de Monte Carlo du cours l'illustre : les $b_1^*$ varient de 0,88 à 1,12 autour de la vraie valeur 1.
+\end{reponse}
+
+\subsection*{(e) $\hat\mu=\frac1{n-1}\sum y_i$ sans biais et convergent ?}
+
+\begin{idee}
+Deux propriétés à vérifier séparément : le biais (espérance) et la convergence (biais et variance tendent vers 0 quand $n\to\infty$).
+\end{idee}
+
+\textbf{Biais.} $\E[\hat\mu]=\dfrac1{n-1}\sumi\E[y_i]=\dfrac{n\mu}{n-1}$, d'où $\text{Biais}(\hat\mu)=\dfrac{n\mu}{n-1}-\mu=\dfrac{\mu}{n-1}\neq0$ (sauf si $\mu=0$).
+
+\textbf{Convergence.} $\Var(\hat\mu)=\dfrac{1}{(n-1)^2}\sumi\Var(y_i)=\dfrac{n\sigma^2}{(n-1)^2}\to0$, et le biais $\mu/(n-1)\to0$. L'erreur quadratique moyenne $\text{EQM}=\Var+\text{Biais}^2\to0$, donc $\hat\mu$ converge en moyenne quadratique, et donc en probabilité : $\plim\hat\mu=\mu$. (Autre argument : $\hat\mu=\frac{n}{n-1}\bar y$, avec $\frac{n}{n-1}\to1$ et $\plim\bar y=\mu$ par la loi des grands nombres.)
+
+\begin{reponse}
+\textbf{Faux.} $\hat\mu$ est \textbf{biaisé} (biais $\mu/(n-1)$, sauf dans le cas particulier $\mu=0$), mais il est \textbf{convergent} (biais et variance tendent vers 0). L'affirmation, qui exige les deux propriétés, est donc fausse. On retient : convergent n'implique pas sans biais, et inversement.
+\end{reponse}
+
+% =====================================================================
+\section{Question 2 : $\tb=(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\vy$ est sans biais (10 points)}
+% =====================================================================
+
+Hypothèses : $\vy=\vX\vbeta+\veps$, $\E[\veps\mid\vX,\vZ]=\mathbf 0$, $\vZ$ de dimension $n\times K_z$ avec $K_z>K_x$, $\vX'\Pm_z\vX$ définie positive (donc inversible), $\Pm_z=\vZ(\vZ'\vZ)^{-1}\vZ'$. C'est l'estimateur des \textbf{doubles moindres carrés} (variables instrumentales avec plus d'instruments que de régresseurs ; Greene, ch. 8).
+
+\begin{idee}
+Même démarche que pour les MCO : remplacer $\vy$ par $\vX\vbeta+\veps$, écrire $\tb=\vbeta+(\text{matrice})\,\veps$, puis prendre l'espérance conditionnelle à $(\vX,\vZ)$. La matrice ne dépend que de $\vX$ et $\vZ$.
+\end{idee}
+
+\textbf{Étape 1 : écrire $\tb$ en fonction de l'erreur.}
+\[
+\tb=(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z(\vX\vbeta+\veps)
+=\underbrace{(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\vX}_{\I_{K_x}}\vbeta+(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\veps
+\]
+\[
+\phantom{\tb}=\vbeta+(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\veps .
+\]
+
+\textbf{Étape 2 : espérance conditionnelle.} La matrice $(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z=(\vX'\Pm_z\vX)^{-1}\vX'\vZ(\vZ'\vZ)^{-1}\vZ'$ ne dépend que de $\vX$ et $\vZ$ : sachant $(\vX,\vZ)$, c'est une constante. Donc
+\[
+\E[\tb\mid\vX,\vZ]=\vbeta+(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\,\E[\veps\mid\vX,\vZ]=\vbeta+\mathbf 0=\vbeta .
+\]
+
+\textbf{Étape 3 : loi des espérances itérées.} $\E[\tb]=\E\big[\E[\tb\mid\vX,\vZ]\big]=\vbeta$.
+
+\begin{reponse}
+$\E[\tb]=\vbeta$ : $\tb$ est sans biais. Hypothèses utilisées :
+\begin{itemize}[nosep]
+\item $\vX'\Pm_z\vX$ inversible, pour que $\tb$ existe et que $(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\vX=\I$ ;
+\item $\vZ'\vZ$ inversible ($\vZ$ de plein rang colonne), pour que $\Pm_z$ soit défini ;
+\item $\E[\veps\mid\vX,\vZ]=\mathbf 0$, pour annuler le second terme.
+\end{itemize}
+\end{reponse}
+
+\begin{intuition}
+$\Pm_z\vX$ est la partie de $\vX$ « expliquée » par les instruments $\vZ$. On peut écrire $\tb=\big[(\Pm_z\vX)'(\Pm_z\vX)\big]^{-1}(\Pm_z\vX)'\vy$ : c'est la régression de $\vy$ sur $\hat{\vX}=\Pm_z\vX$, d'où le nom « doubles moindres carrés » (première étape : $\vX$ sur $\vZ$ ; seconde : $\vy$ sur $\hat{\vX}$). Ici, avec $\E[\veps\mid\vX,\vZ]=\mathbf 0$, l'estimateur est sans biais, mais il serait moins efficace que les MCO (même argument que l'intra 2020, question 2(b)). Son intérêt apparaît quand $\vX$ est endogène.
+\end{intuition}
+
+% =====================================================================
+\section{Question 3 : omission d'une variable pertinente (25 points)}
+% =====================================================================
+
+Vrai modèle (3) : $y_i=\beta_0+\beta_1x_{1,i}+\beta_2x_{2,i}+\epsilon_i$, avec $x_{2,i}=\eta x_{1,i}+u_i$, $\eta\neq0$, $\E[u_i\mid x_{1,i}]=0$. On estime le modèle (4) qui \textbf{omet} $x_2$.
+
+\subsection*{(a) Les étapes de l'étude de Monte Carlo (15 points)}
+
+\begin{enumerate}
+\item \textbf{Fixer le « monde » simulé.} Choisir $\beta_0$, $\beta_1$, $\beta_2$ \textbf{avec $\beta_2\neq0$} (sinon $x_2$ n'est pas pertinente et il n'y a rien à étudier), $\sigma^2$, et $\eta\neq0$. Exemple : $\beta_0=2$, $\beta_1=1$, $\beta_2=0{,}5$, $\sigma^2=1$, $\eta=0{,}5$. Choisir $n$ (par ex. 250) et $R$ (par ex. 1000 ou 10\,000). Fixer la graine (\texttt{set seed}) pour pouvoir reproduire les résultats.
+\item \textbf{Générer les régresseurs une seule fois} (fixes d'une répétition à l'autre) :
+\begin{enumerate}[nosep]
+\item $x_{1,i}$, par ex. $N(0,1)$ ;
+\item $u_i\sim N(0,1)$, indépendant de $x_1$ (ce qui assure $\E[u_i\mid x_{1,i}]=0$) ;
+\item $x_{2,i}=\eta x_{1,i}+u_i$.
+\end{enumerate}
+\item \textbf{Pour chaque répétition $r=1,\dots,R$} :
+\begin{enumerate}[nosep]
+\item tirer de nouvelles erreurs $\epsilon_i^{(r)}\sim N(0,\sigma^2)$, indépendantes de $x_1$ et $x_2$ ;
+\item générer $y_i^{(r)}=\beta_0+\beta_1x_{1,i}+\beta_2x_{2,i}+\epsilon_i^{(r)}$ avec le \textbf{vrai} modèle (3) ;
+\item estimer par MCO le modèle \textbf{court} (4) : $y^{(r)}$ sur une constante et $x_1$ seulement ;
+\item sauvegarder $b_1^{(r)}$ (et son écart-type). Idéalement, estimer aussi le modèle complet (3) sur le même échantillon pour comparer.
+\end{enumerate}
+\item \textbf{Analyser les résultats} :
+\begin{itemize}[nosep]
+\item moyenne $\bar b_1=\frac1R\sum_rb_1^{(r)}$ et biais estimé $\bar b_1-\beta_1$, comparé à l'erreur de simulation $\text{e.t.}(b_1)/\sqrt R$ (ou test $t$ de $H_0:\E[b_1]=\beta_1$) ;
+\item comparer le biais estimé au biais théorique $\beta_2\hat\delta$ (voir (b)) ;
+\item histogramme des $b_1^{(r)}$ : centré sur $\beta_1+\beta_2\eta$, pas sur $\beta_1$ ;
+\item prolongements : faire varier $\eta$ et $\beta_2$ (le biais change de taille et de signe), et $n$ (le biais ne disparaît pas).
+\end{itemize}
+\end{enumerate}
+
+\subsection*{(b) Le biais attendu de $b_1$ : démonstration formelle (10 points)}
+
+\begin{idee}
+Écrire $b_1$ (formule de la régression simple) en remplaçant $y_i$ par le \emph{vrai} modèle (3), qui contient $x_2$. Le terme en $\beta_2x_2$ ne disparaît pas : c'est lui qui crée le biais.
+\end{idee}
+
+\textbf{Étape 1 : formule de $b_1$ dans le modèle court.}
+\[
+b_1=\frac{\sum(x_{1,i}-\bar x_1)y_i}{\sum(x_{1,i}-\bar x_1)^2}.
+\]
+
+\textbf{Étape 2 : on remplace $y_i$ par le vrai modèle (3).} Avec $\sum(x_{1,i}-\bar x_1)=0$ et $\sum(x_{1,i}-\bar x_1)x_{1,i}=\sum(x_{1,i}-\bar x_1)^2$ :
+\[
+b_1=\beta_1+\beta_2\underbrace{\frac{\sum(x_{1,i}-\bar x_1)x_{2,i}}{\sum(x_{1,i}-\bar x_1)^2}}_{\hat\delta}+\frac{\sum(x_{1,i}-\bar x_1)\epsilon_i}{\sum(x_{1,i}-\bar x_1)^2}.
+\]
+$\hat\delta$ est la pente MCO de la régression de $x_2$ sur $x_1$ (avec constante).
+
+\textbf{Étape 3 : espérance conditionnelle à $(x_1,x_2)$.} Avec $\E[\epsilon\mid X]=0$, le dernier terme a une espérance nulle :
+\[
+\E[b_1\mid x_1,x_2]=\beta_1+\beta_2\,\hat\delta .
+\]
+
+\textbf{Étape 4 : utiliser $x_2=\eta x_1+u$.}
+\[
+\hat\delta=\frac{\sum(x_{1,i}-\bar x_1)(\eta x_{1,i}+u_i)}{\sum(x_{1,i}-\bar x_1)^2}=\eta+\frac{\sum(x_{1,i}-\bar x_1)u_i}{\sum(x_{1,i}-\bar x_1)^2},
+\qquad \E[\hat\delta\mid x_1]=\eta
+\]
+car $\E[u_i\mid x_{1,i}]=0$. Par la loi des espérances itérées :
+\[
+\E[b_1\mid x_1]=\beta_1+\beta_2\,\eta,\qquad \E[b_1]=\beta_1+\beta_2\eta .
+\]
+
+\begin{reponse}
+\[
+\text{Biais}(b_1)=\beta_2\,\eta\ \neq0\qquad(\beta_2\neq0,\ \eta\neq0).
+\]
+On s'attend donc à ce que la moyenne des $b_1^{(r)}$ soit significativement différente de $\beta_1$, proche de $\beta_1+\beta_2\eta$ (exemple : $1+0{,}5\times0{,}5=1{,}25$). Dans la simulation, avec $x_1,x_2$ fixes, le centre exact est $\beta_1+\beta_2\hat\delta$, très proche de $\beta_1+\beta_2\eta$ quand $n$ est grand.
+
+\textbf{Signe du biais} : celui de $\beta_2\eta$.
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+& $\eta>0$ (corrélation positive) & $\eta<0$ \\
+\midrule
+$\beta_2>0$ & biais $>0$ (surestimation) & biais $<0$ \\
+$\beta_2<0$ & biais $<0$ & biais $>0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Le biais ne disparaît pas quand $n$ augmente} : $\plim b_1=\beta_1+\beta_2\eta$ ; $b_1$ n'est pas convergent.
+\end{reponse}
+
+\begin{intuition}
+En omettant $x_2$, on le met dans l'erreur du modèle court : $y_i=\beta_0+\beta_1x_{1,i}+\underbrace{(\beta_2x_{2,i}+\epsilon_i)}_{\text{nouvelle erreur}}$. Comme $x_2$ est corrélé avec $x_1$ ($\eta\neq0$), cette nouvelle erreur est corrélée avec $x_1$ : l'hypothèse d'exogénéité est violée. Quand $x_1$ augmente d'une unité, $x_2$ augmente en moyenne de $\eta$, ce qui fait varier $y$ de $\beta_2\eta$ en plus. Le modèle court attribue cet effet indirect à $x_1$. À comparer avec l'intra 2020 (question 4) : \emph{ajouter} une variable non pertinente ne crée pas de biais ; \emph{omettre} une variable pertinente et corrélée en crée un.
+\end{intuition}
+
+\begin{attention}
+L'énoncé numérote deux sous-questions « (a) » ; la seconde (10 points) est la partie (b) ci-dessus.
+\end{attention}
+
+% =====================================================================
+\section{Question 4 : éducation, salaires et immigration (40 points)}
+% =====================================================================
+
+Modèle (5) : $y_i=\beta_0+\beta_1Educ_i+\beta_2Exper_i+\beta_3Immigrant_i+\epsilon_i$, où $y_i$ est le \textbf{logarithme} du salaire annuel, $n=1000$, $K=4$, donc $n-K=996$ degrés de liberté. Valeur critique : $t_{0{,}975;\,996}=1{,}962$.
+
+\subsection*{(a) Interprétation de $\hat\beta_1=0{,}0874$}
+
+\begin{reponse}
+À expérience et statut d'immigrant donnés, une année de scolarité supplémentaire est associée à un salaire annuel plus élevé d'environ \textbf{8,7\,\%} (comme $y$ est en log, $100\hat\beta_1\approx$ variation en \% ; exactement $e^{0{,}0874}-1=9{,}1\,\%$). C'est le « rendement de l'éducation ».
+\begin{itemize}[nosep]
+\item « À \dots\ donnés » : par FWL, $\hat\beta_1$ n'utilise que la variation de l'éducation non expliquée par l'expérience et le statut d'immigrant.
+\item Le coefficient est très précis ($t=15{,}57$, IC à 95\,\% : $[0{,}076\ ;\ 0{,}098]$).
+\item C'est une association : si l'habileté (dans $\epsilon$) est corrélée à l'éducation, $\hat\beta_1$ est biaisé et ne mesure pas un effet causal.
+\end{itemize}
+\end{reponse}
+
+\subsection*{(b) Interprétation de $\hat\beta_3=-0{,}2688$}
+
+\begin{reponse}
+$\beta_3$ mesure l'écart de salaire entre immigrants et non-immigrants (catégorie de référence) \textbf{à éducation et expérience égales}. Les immigrants gagnent environ \textbf{26,9\,\%} de moins (approximation $100\hat\beta_3$) ; l'écart exact est $e^{-0{,}2688}-1=-23{,}6\,\%$ (l'approximation en log est moins bonne pour un grand coefficient).
+
+Graphiquement : deux droites de salaire parallèles, celle des immigrants $0{,}2688$ plus bas en log. L'écart est supposé \emph{constant}, quels que soient l'éducation et l'expérience. Prudence : cet écart conditionnel ne prouve pas une discrimination ; il peut refléter des facteurs omis (langue, reconnaissance des diplômes étrangers, expérience acquise à l'étranger moins valorisée, réseaux).
+\end{reponse}
+
+\subsection*{(c) Pourquoi ne pas inclure aussi $NonImmigrant_i$ ?}
+
+\begin{reponse}
+Parce que $Immigrant_i+NonImmigrant_i=1$ pour tout $i$ : la somme des deux colonnes est exactement la colonne de la constante. C'est le \textbf{piège des variables indicatrices} : il y a \textbf{multicolinéarité parfaite}, $\vX$ n'est pas de plein rang colonne, $\vX'\vX$ n'est pas inversible, et $\vb=(\vX'\vX)^{-1}\vX'\vy$ n'existe pas. Les paramètres ne sont pas identifiés : on ne peut pas séparer l'effet de la constante de celui des deux indicatrices.
+
+On inclut donc une seule indicatrice ; l'autre groupe (les non-immigrants) sert de \textbf{référence}, et $\beta_3$ s'interprète comme un écart par rapport à ce groupe. (Alternative équivalente : inclure les deux indicatrices et retirer la constante.)
+\end{reponse}
+
+\subsection*{(d) $p$-value du coefficient de l'expérience (0,044)}
+
+\begin{reponse}
+\textbf{Interprétation} : si $\beta_2=0$ était vrai, la probabilité d'obtenir une statistique $t$ au moins aussi grande en valeur absolue que celle observée serait de 4,4\,\%. C'est aussi le plus petit seuil auquel on rejetterait $H_0$.
+
+\textbf{Décision} ($H_0:\beta_2=0$ contre $H_a:\beta_2\neq0$) :
+\begin{itemize}[nosep]
+\item au seuil de \textbf{5\,\%} : $0{,}044<0{,}05$, on \textbf{rejette} $H_0$ : l'expérience a un effet significatif ;
+\item au seuil de 10\,\% : on rejette aussi ;
+\item au seuil de \textbf{1\,\%} : $0{,}044>0{,}01$, on \textbf{ne rejette pas} $H_0$.
+\end{itemize}
+Au seuil conventionnel de 5\,\%, on rejette $\beta_2=0$, mais de peu.
+
+Les valeurs manquantes se retrouvent : $p=0{,}044$ avec 996 degrés de liberté correspond à $|t|\approx2{,}02$, donc $\text{e.t.}(\hat\beta_2)\approx0{,}0339/2{,}02\approx0{,}0168$.
+\end{reponse}
+
+\subsection*{(e) Rejette-t-on $\beta_3=0$ au seuil de 5\,\% ?}
+
+\begin{idee}
+Utiliser la dualité entre intervalle de confiance et test : on rejette $H_0:\beta_3=0$ au seuil de 5\,\% si et seulement si 0 n'est pas dans l'intervalle de confiance à 95\,\%.
+\end{idee}
+
+\begin{reponse}
+\textbf{Oui.} L'intervalle de confiance à 95\,\% est $[-0{,}3244\ ;\ -0{,}2131]$ : il ne contient pas 0, donc on rejette $H_0:\beta_3=0$ contre $H_a:\beta_3\neq0$ au seuil de 5\,\%.
+
+\textbf{Justification de la dualité} : l'IC est $\hat\beta_3\pm1{,}962\,\text{e.t.}(\hat\beta_3)$. Le nombre 0 est hors de l'IC si et seulement si $|\hat\beta_3-0|>1{,}962\,\text{e.t.}(\hat\beta_3)$, c'est-à-dire $|t|>1{,}962$.
+
+\textbf{Valeurs manquantes retrouvées} : la demi-largeur de l'IC vaut $(-0{,}2131+0{,}3244)/2=0{,}0556=1{,}962\times\text{e.t.}$, d'où $\text{e.t.}(\hat\beta_3)\approx0{,}0283$, $t\approx-0{,}2688/0{,}0283\approx-9{,}48$, et une $p$-value pratiquement nulle. L'écart est très significatif.
+\end{reponse}
+
+\subsection*{(f) Test $F$ de $H_0:\beta_1-\beta_2=0$}
+
+\begin{idee}
+On estime le modèle deux fois : sans contrainte, puis en imposant $\beta_1=\beta_2$. Si la contrainte est vraie, elle ne devrait pas faire beaucoup augmenter la somme des carrés des résidus.
+\end{idee}
+
+\textbf{Étape 1 : modèle non contraint.} Estimer (5) par MCO et récupérer $\text{SCE}_u=\sum e_i^2$. Ici $K=4$ et $n-K=996$.
+
+\textbf{Étape 2 : modèle contraint.} Sous $H_0$, $\beta_1=\beta_2\equiv\beta$ :
+\[
+y_i=\beta_0+\beta\,Educ_i+\beta\,Exper_i+\beta_3Immigrant_i+\epsilon_i=\beta_0+\beta\,(Educ_i+Exper_i)+\beta_3Immigrant_i+\epsilon_i .
+\]
+On crée la variable $S_i=Educ_i+Exper_i$, on régresse $y$ sur une constante, $S$ et $Immigrant$, et on récupère $\text{SCE}_r$. On a $\text{SCE}_r\ge\text{SCE}_u$ (minimiser sous contrainte ne peut pas faire mieux).
+
+\textbf{Étape 3 : statistique.} Une seule restriction, $r=1$ :
+\[
+F=\frac{(\text{SCE}_r-\text{SCE}_u)/r}{\text{SCE}_u/(n-K)}=\frac{(\text{SCE}_r-\text{SCE}_u)/1}{\text{SCE}_u/996}\ \sim\ F(1,\,996)\quad\text{sous }H_0
+\]
+(loi exacte, puisque $\epsilon\mid X\sim N(0,\sigma^2)$). Les sommes « des écarts résiduels » de l'énoncé sont les sommes des \emph{carrés} des résidus.
+
+\textbf{Étape 4 : décision.} Rejeter $H_0$ au seuil de 5\,\% si $F>F_{0{,}95;\,1;\,996}=3{,}85$, ou si la $p$-value $P(F_{1,996}>F)$ est inférieure à 0,05.
+
+\begin{reponse}
+Modèle contraint : $y$ sur une constante, $(Educ+Exper)$ et $Immigrant$ ; $F=\dfrac{(\text{SCE}_r-\text{SCE}_u)/1}{\text{SCE}_u/996}$ ; rejet si $F>3{,}85$. Interprétation : $H_0$ dit qu'une année d'éducation et une année d'expérience ont le même effet sur le salaire. Avec une seule restriction, $F=t^2$, où $t$ est la statistique de la question (g) ; d'ailleurs $3{,}85=1{,}962^2$. En Stata : \texttt{test educ = exper}.
+\end{reponse}
+
+\subsection*{(g) Reparamétrisation pour un test $t$ d'exclusion}
+
+\begin{idee}
+Faire apparaître $\theta=\beta_1-\beta_2$ comme coefficient d'une variable du modèle. Tester $\theta=0$ revient alors à tester l'exclusion de cette variable, avec le $t$ du tableau.
+\end{idee}
+
+On pose $\theta=\beta_1-\beta_2$, donc $\beta_1=\theta+\beta_2$, et on substitue dans (5) :
+\[
+\beta_1Educ_i+\beta_2Exper_i=(\theta+\beta_2)Educ_i+\beta_2Exper_i=\theta\,Educ_i+\beta_2\,(Educ_i+Exper_i).
+\]
+Le modèle reparamétré est
+\[
+y_i=\beta_0+\theta\,Educ_i+\beta_2\,(Educ_i+Exper_i)+\beta_3Immigrant_i+\epsilon_i .
+\]
+
+\begin{reponse}
+On crée $S_i=Educ_i+Exper_i$ et on régresse $y$ sur une constante, $Educ$, $S$ et $Immigrant$. Le coefficient de $Educ$ est $\theta=\beta_1-\beta_2$ ; tester $H_0:\beta_1=\beta_2$ revient à tester que $Educ$ peut être exclue de ce modèle ($\theta=0$). On lit directement dans le tableau :
+\[
+t=\frac{\hat\theta}{\text{e.t.}(\hat\theta)}\ \sim\ t(996)\ \text{sous }H_0,\quad\text{rejet si }|t|>1{,}962 .
+\]
+C'est le même modèle que (5), écrit autrement : même ajustement, même SCE, et $t^2$ est égal au $F$ de la question (f). Équivalent sans reparamétrer : $t=(\hat\beta_1-\hat\beta_2)/\sqrt{\widehat\Var(\hat\beta_1)+\widehat\Var(\hat\beta_2)-2\widehat\Cov(\hat\beta_1,\hat\beta_2)}$ (\texttt{lincom educ - exper}).
+\end{reponse}
+
+\subsection*{(h) Même effet de l'éducation pour immigrants et non-immigrants}
+
+\begin{idee}
+Permettre à la pente de l'éducation de différer selon le groupe, grâce à une interaction. L'hypothèse « même effet » devient alors « le coefficient de l'interaction est nul » : une contrainte d'exclusion.
+\end{idee}
+
+\textbf{Modèle.}
+\[
+y_i=\beta_0+\beta_1Educ_i+\beta_2Exper_i+\beta_3Immigrant_i+\beta_4\,(Immigrant_i\times Educ_i)+\epsilon_i .
+\]
+Effet d'une année d'éducation : $\beta_1$ pour les non-immigrants ($Immigrant_i=0$), $\beta_1+\beta_4$ pour les immigrants. Le coefficient $\beta_4$ est donc la \emph{différence} de rendement de l'éducation entre les deux groupes. ($\beta_3$ doit rester dans le modèle, pour laisser la constante différer aussi entre groupes.)
+
+\textbf{Test.} $H_0:\beta_4=0$ (même rendement de l'éducation) contre $H_a:\beta_4\neq0$.
+\begin{enumerate}[nosep]
+\item Créer la variable $Immigrant_i\times Educ_i$ et estimer le modèle par MCO ($K=5$, $n-K=995$).
+\item Test $t$ d'exclusion : $t=\hat\beta_4/\text{e.t.}(\hat\beta_4)\sim t(995)$ sous $H_0$ ; rejeter si $|t|>1{,}962$ (ou $p<0{,}05$).
+\item De façon équivalente, test $F$ avec $r=1$ : le modèle contraint est (5) et le non contraint est le modèle avec interaction : $F=\dfrac{(\text{SCE}_r-\text{SCE}_u)/1}{\text{SCE}_u/995}=t^2$.
+\end{enumerate}
+
+\begin{reponse}
+On ajoute l'interaction $Immigrant\times Educ$ et on teste l'exclusion de cette variable ($H_0:\beta_4=0$) par un test $t$. Si l'on rejette, le rendement de l'éducation diffère entre immigrants et non-immigrants ; le rendement des immigrants est alors estimé par $\hat\beta_1+\hat\beta_4$. Par exemple, $\hat\beta_4<0$ serait cohérent avec une moins bonne reconnaissance des diplômes obtenus à l'étranger.
+\end{reponse}
+
+\end{document}
