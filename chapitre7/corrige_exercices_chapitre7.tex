@@ -1,0 +1,310 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small Chapitre 7 -- La non-sphéricité des erreurs}\rhead{\small Corrigé des exercices}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vi}{\bm{\iota}}
+\newcommand{\veps}{\bm{\epsilon}}\newcommand{\vu}{\mathbf{u}}\newcommand{\vbeta}{\bm{\beta}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\Pm}{\mathbf{P}}\newcommand{\Om}{\bm{\Omega}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démarche},#1}
+\newtcolorbox{reponse}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Réponse},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+\newtcolorbox{cours}[1][]{colback=gray!6,colframe=gray!55!black,fonttitle=\bfseries,title={Lien avec le cours},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Chapitre 7 : corrigé des exercices}\\[6pt]
+{\large La non-sphéricité des erreurs : MCG, hétéroscédasticité et erreurs AR(1)}
+\end{center}
+
+\begin{tcolorbox}[colback=white,colframe=NavyBlue,title=Ce qu'il faut avoir en tête (rappels du cours)]
+\begin{itemize}[nosep]
+\item Erreurs \textbf{non sphériques} : $\E[\veps\veps'\mid\vX]=\sigma^2\Om\neq\sigma^2\I_n$, soit à cause de l'\textbf{hétéroscédasticité} (variances différentes sur la diagonale), soit à cause de la \textbf{corrélation sérielle} (termes hors diagonale non nuls).
+\item Les MCO restent \textbf{sans biais} mais sont \textbf{inefficaces}, et la formule $s^2(\vX'\vX)^{-1}$ de leur variance est fausse (éq. (3)--(4) du cours).
+\item \textbf{MCG} (moindres carrés généralisés) : on cherche une matrice $\Pm$ telle que $\Pm'\Pm=\Om^{-1}$ (éq. (6)) ; le modèle transformé $\Pm\vy=\Pm\vX\vbeta+\Pm\veps$ a des erreurs sphériques, et les MCO appliqués à ce modèle donnent l'estimateur efficace
+\[
+\tilde{\bm\beta}=(\vX'\Om^{-1}\vX)^{-1}\vX'\Om^{-1}\vy,\qquad \Var(\tilde{\bm\beta}\mid\vX)=\sigma^2(\vX'\Om^{-1}\vX)^{-1}\quad\text{(éq. (10) et (12))}.
+\]
+\end{itemize}
+Les deux exercices sont les deux cas du cours, avec seulement deux observations pour que tout se calcule à la main : l'exercice 1 est l'\textbf{hétéroscédasticité} (section 4), l'exercice 2 la \textbf{corrélation sérielle AR(1)} (section 6).
+\end{tcolorbox}
+
+\tableofcontents
+
+% =====================================================================
+\section{Exercice 1 : estimer une moyenne avec des variances différentes}
+% =====================================================================
+
+$y_1,y_2$ avec $y_i\sim N(\mu,\sigma_i^2)$, $\sigma_1^2\neq\sigma_2^2$ en général. On suppose, comme pour tout échantillon, que $y_1$ et $y_2$ sont \textbf{indépendants}.
+
+\begin{cours}
+C'est le modèle $y_i=\mu+\epsilon_i$ (régression sur une constante, $\vX=\vi$) avec des erreurs \textbf{hétéroscédastiques} : $\E[\veps\veps']=\begin{pmatrix}\sigma_1^2&0\\0&\sigma_2^2\end{pmatrix}$, une matrice diagonale dont les éléments ne sont pas égaux (éq. (16) du cours). On compare les MCO (poids égaux) et les MCG (poids $1/\sigma_i^2$).
+\end{cours}
+
+\subsection*{(a) L'estimateur MCO}
+
+\begin{idee}
+Minimiser la fonction par rapport à $\mu$ : dériver, égaler à zéro, résoudre.
+\end{idee}
+
+On minimise $S(\mu)=\left(\dfrac{y_1-\mu}{2}\right)^2+\left(\dfrac{y_2-\mu}{2}\right)^2=\dfrac14\Big[(y_1-\mu)^2+(y_2-\mu)^2\Big]$.
+
+\textbf{Condition du premier ordre} (dérivée de $(y_i-\mu)^2$ par rapport à $\mu$ : $-2(y_i-\mu)$) :
+\[
+\frac{dS}{d\mu}=\frac14\big[-2(y_1-\mu)-2(y_2-\mu)\big]=-\frac12\big(y_1+y_2-2\mu\big)=0
+\quad\Longrightarrow\quad
+\hat\mu=\frac{y_1+y_2}{2}.
+\]
+\textbf{Condition du second ordre} : $\dfrac{d^2S}{d\mu^2}=\dfrac14(2+2)=1>0$ : c'est bien un minimum.
+
+\begin{reponse}
+$\hat\mu=\dfrac{y_1+y_2}{2}=\bar y$ : la moyenne simple. Le facteur $\frac12$ dans chaque terme est le \emph{même} pour les deux observations : il ne change pas le point où le minimum est atteint. Les MCO donnent donc le même poids ($\frac12$) à chaque observation, sans tenir compte de leur précision.
+\end{reponse}
+
+\subsection*{(b) $\hat\mu$ est sans biais ; sa variance}
+
+\textbf{Biais.}
+\[
+\E[\hat\mu]=\frac{\E[y_1]+\E[y_2]}{2}=\frac{\mu+\mu}{2}=\mu .
+\]
+
+\textbf{Variance} (indépendance : pas de covariance) :
+\[
+\Var(\hat\mu)=\frac14\big[\Var(y_1)+\Var(y_2)\big]=\frac{\sigma_1^2+\sigma_2^2}{4}.
+\]
+
+\begin{reponse}
+$\hat\mu$ est \textbf{sans biais} et $\Var(\hat\mu)=\dfrac{\sigma_1^2+\sigma_2^2}{4}$. Comme le dit le cours (section 2.1), les MCO restent sans biais en présence d'hétéroscédasticité : l'absence de biais n'utilise que $\E[\epsilon_i]=0$.
+\end{reponse}
+
+\subsection*{(c) L'estimateur MCG}
+
+On minimise $S(\mu)=\left(\dfrac{y_1-\mu}{\sigma_1}\right)^2+\left(\dfrac{y_2-\mu}{\sigma_2}\right)^2$.
+
+\textbf{Condition du premier ordre.}
+\[
+\frac{dS}{d\mu}=-\frac{2(y_1-\mu)}{\sigma_1^2}-\frac{2(y_2-\mu)}{\sigma_2^2}=0
+\iff \frac{y_1}{\sigma_1^2}+\frac{y_2}{\sigma_2^2}=\mu\left(\frac1{\sigma_1^2}+\frac1{\sigma_2^2}\right).
+\]
+\textbf{On isole $\mu$.}
+\[
+\tilde\mu=\frac{\dfrac{y_1}{\sigma_1^2}+\dfrac{y_2}{\sigma_2^2}}{\dfrac1{\sigma_1^2}+\dfrac1{\sigma_2^2}}
+=\frac{\sigma_2^2\,y_1+\sigma_1^2\,y_2}{\sigma_1^2+\sigma_2^2}
+\]
+(on a multiplié numérateur et dénominateur par $\sigma_1^2\sigma_2^2$). Condition du second ordre : $\frac{d^2S}{d\mu^2}=\frac2{\sigma_1^2}+\frac2{\sigma_2^2}>0$.
+
+\begin{reponse}
+\[
+\tilde\mu=w_1y_1+w_2y_2,\qquad
+w_1=\frac{\sigma_2^2}{\sigma_1^2+\sigma_2^2}=\frac{1/\sigma_1^2}{1/\sigma_1^2+1/\sigma_2^2},\qquad
+w_2=\frac{\sigma_1^2}{\sigma_1^2+\sigma_2^2}=\frac{1/\sigma_2^2}{1/\sigma_1^2+1/\sigma_2^2}.
+\]
+C'est une \textbf{moyenne pondérée}, chaque observation étant pondérée par l'inverse de sa variance, c'est-à-dire par sa \textbf{précision}.
+\end{reponse}
+
+\textbf{Vérification avec la formule matricielle du cours.} Avec $\vX=\vi=(1,1)'$ et $\Om=\text{diag}(\sigma_1^2,\sigma_2^2)$ :
+\[
+\vi'\Om^{-1}\vi=\frac1{\sigma_1^2}+\frac1{\sigma_2^2},\qquad
+\vi'\Om^{-1}\vy=\frac{y_1}{\sigma_1^2}+\frac{y_2}{\sigma_2^2},\qquad
+\tilde\mu=(\vi'\Om^{-1}\vi)^{-1}\vi'\Om^{-1}\vy\ \checkmark
+\]
+Et la matrice de transformation est $\Pm=\text{diag}(1/\sigma_1,\,1/\sigma_2)$ (cours, section 4.1) : diviser chaque observation par son écart-type. Le modèle transformé $y_i/\sigma_i=\mu\,(1/\sigma_i)+\epsilon_i/\sigma_i$ a des erreurs de variance 1 : il est homoscédastique, et ses MCO minimisent exactement le critère de (c).
+
+\subsection*{(d) $\tilde\mu$ est sans biais ; sa variance}
+
+\textbf{Biais.} Les poids somment à 1 ($w_1+w_2=\frac{\sigma_2^2+\sigma_1^2}{\sigma_1^2+\sigma_2^2}=1$), donc
+\[
+\E[\tilde\mu]=w_1\mu+w_2\mu=(w_1+w_2)\mu=\mu .
+\]
+
+\textbf{Variance.}
+\[
+\Var(\tilde\mu)=w_1^2\sigma_1^2+w_2^2\sigma_2^2
+=\frac{\sigma_2^4\sigma_1^2+\sigma_1^4\sigma_2^2}{(\sigma_1^2+\sigma_2^2)^2}
+=\frac{\sigma_1^2\sigma_2^2(\sigma_2^2+\sigma_1^2)}{(\sigma_1^2+\sigma_2^2)^2}
+=\frac{\sigma_1^2\sigma_2^2}{\sigma_1^2+\sigma_2^2}.
+\]
+
+\begin{reponse}
+$\tilde\mu$ est \textbf{sans biais} et
+\[
+\Var(\tilde\mu)=\frac{\sigma_1^2\sigma_2^2}{\sigma_1^2+\sigma_2^2}=\frac{1}{\dfrac1{\sigma_1^2}+\dfrac1{\sigma_2^2}} .
+\]
+C'est bien la formule du cours $(\vX'\Om^{-1}\vX)^{-1}=(\vi'\Om^{-1}\vi)^{-1}$ (éq. (12)). Remarque : la précision de $\tilde\mu$ (l'inverse de sa variance) est la \emph{somme} des précisions des deux observations.
+\end{reponse}
+
+\subsection*{(e) $\tilde\mu$ est plus efficace que $\hat\mu$}
+
+\begin{idee}
+Les deux estimateurs sont sans biais : le plus efficace est celui de plus petite variance. On calcule la différence des variances et on montre qu'elle est positive.
+\end{idee}
+
+\[
+\Var(\hat\mu)-\Var(\tilde\mu)=\frac{\sigma_1^2+\sigma_2^2}{4}-\frac{\sigma_1^2\sigma_2^2}{\sigma_1^2+\sigma_2^2}
+=\frac{(\sigma_1^2+\sigma_2^2)^2-4\sigma_1^2\sigma_2^2}{4(\sigma_1^2+\sigma_2^2)} .
+\]
+Le numérateur est une identité remarquable : $(a+b)^2-4ab=a^2+2ab+b^2-4ab=(a-b)^2$, avec $a=\sigma_1^2$ et $b=\sigma_2^2$. Donc
+\[
+\Var(\hat\mu)-\Var(\tilde\mu)=\frac{(\sigma_1^2-\sigma_2^2)^2}{4(\sigma_1^2+\sigma_2^2)}\ \ge\ 0 .
+\]
+
+\begin{reponse}
+$\Var(\tilde\mu)\le\Var(\hat\mu)$, avec égalité \textbf{si et seulement si} $\sigma_1^2=\sigma_2^2$ (pas d'hétéroscédasticité : MCO et MCG coïncident, $w_1=w_2=\frac12$). Dès que les variances diffèrent, $\tilde\mu$ est strictement plus efficace, et le gain est d'autant plus grand que les variances sont différentes.
+
+\textbf{Exemple} : $\sigma_1^2=1$, $\sigma_2^2=9$.
+\begin{itemize}[nosep]
+\item MCO : poids $(0{,}5\ ;\ 0{,}5)$, \ $\Var(\hat\mu)=10/4=2{,}5$ ;
+\item MCG : poids $(0{,}9\ ;\ 0{,}1)$, \ $\Var(\tilde\mu)=9/10=0{,}9$.
+\end{itemize}
+La variance des MCO est presque 3 fois plus grande. Elle est même plus grande que celle de $y_1$ tout seul (1) : en donnant autant de poids à l'observation très bruitée, les MCO font \emph{pire} qu'en l'ignorant.
+\end{reponse}
+
+\begin{intuition}
+Une observation de grande variance est peu fiable : il faut lui faire moins confiance. Les MCO traitent toutes les observations de la même façon ; les MCG donnent plus de poids aux observations précises. C'est le principe de la section 4.1 du cours : « diviser chaque observation par $\sigma_i$ » rend les erreurs homoscédastiques et redonne aux MCO leur efficacité (Gauss-Markov s'applique au modèle transformé). En pratique, les $\sigma_i^2$ sont inconnus : on les estime par une fonction scédastique, ce sont les MCGE (sections 4.1--4.2).
+\end{intuition}
+
+% =====================================================================
+\section{Exercice 2 : erreurs AR(1) avec deux observations}
+% =====================================================================
+
+$y_t=\beta_0+\epsilon_t$, avec $\epsilon_t=\rho\epsilon_{t-1}+u_t$, $|\rho|<1$, $u_t\sim iid(0,\sigma^2)$, et $\E(u_t\mid\epsilon_s)=0$ pour les dates passées. On a $T=2$ observations.
+
+\begin{cours}
+C'est le modèle de la section 6 du cours avec $\vX=\vi$ (une constante seulement) et $T=2$. Les questions reprennent, pas à pas, la construction de la matrice $\Om$ (éq. (37)) et de la transformation de Prais-Winsten (éq. (42)--(44)).
+\end{cours}
+
+\subsection*{(a) La matrice $\Om=\E[\veps\veps']$}
+
+\begin{idee}
+Il faut trois quantités : $\Var(\epsilon_1)$, $\Var(\epsilon_2)$ et $\Cov(\epsilon_1,\epsilon_2)$. On utilise la stationnarité ($|\rho|<1$) comme dans le cours (éq. (35)--(36)).
+\end{idee}
+
+\textbf{Variance.} Le processus est stationnaire : $\Var(\epsilon_t)$ est la même à toutes les dates. En prenant la variance de $\epsilon_t=\rho\epsilon_{t-1}+u_t$ ($u_t$ non corrélé avec $\epsilon_{t-1}$) :
+\[
+\Var(\epsilon_t)=\rho^2\Var(\epsilon_{t-1})+\sigma^2
+\ \Longrightarrow\ \sigma_\epsilon^2=\rho^2\sigma_\epsilon^2+\sigma^2
+\ \Longrightarrow\ \sigma_\epsilon^2=\frac{\sigma^2}{1-\rho^2}.
+\]
+(Même résultat que l'éq. (35) du cours, obtenu là par la somme géométrique $1+\rho^2+\rho^4+\dots=\frac1{1-\rho^2}$.)
+
+\textbf{Covariance.}
+\[
+\Cov(\epsilon_1,\epsilon_2)=\E[\epsilon_1\epsilon_2]=\E[\epsilon_1(\rho\epsilon_1+u_2)]=\rho\,\E[\epsilon_1^2]+\underbrace{\E[\epsilon_1u_2]}_{0}=\rho\,\frac{\sigma^2}{1-\rho^2}.
+\]
+($\E[\epsilon_1u_2]=0$ car $\E(u_2\mid\epsilon_1)=0$.)
+
+\begin{reponse}
+\[
+\Om=\E[\veps\veps']=\begin{pmatrix}\E[\epsilon_1^2]&\E[\epsilon_1\epsilon_2]\\\E[\epsilon_2\epsilon_1]&\E[\epsilon_2^2]\end{pmatrix}
+=\frac{\sigma^2}{1-\rho^2}\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}.
+\]
+C'est l'éq. (37) du cours avec $T=2$. Les variances sont égales (pas d'hétéroscédasticité) ; c'est la covariance hors diagonale ($\rho\neq0$) qui rend les erreurs non sphériques.
+\end{reponse}
+
+\subsection*{(b) La matrice $\Pm$ telle que $\Pm'\Pm=\Om^{-1}$}
+
+\textbf{Étape 1 : calculer $\Om^{-1}$.} Pour une matrice $2\times2$, $\begin{pmatrix}a&b\\c&d\end{pmatrix}^{-1}=\frac1{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}$. Ici $\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}^{-1}=\frac1{1-\rho^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}$, donc
+\[
+\Om^{-1}=\frac{1-\rho^2}{\sigma^2}\cdot\frac{1}{1-\rho^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}=\frac1{\sigma^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}.
+\]
+
+\begin{attention}[title={$\Pm$ ne peut pas être diagonale}]
+L'énoncé demande une matrice « diagonale ». Or si $\Pm=\text{diag}(p_1,p_2)$, alors $\Pm'\Pm=\text{diag}(p_1^2,p_2^2)$ est diagonale, alors que $\Om^{-1}$ a des termes hors diagonale égaux à $-\rho/\sigma^2\neq0$. Aucune matrice diagonale ne convient (sauf si $\rho=0$). Le cours le dit : $\Pm$ est \textbf{triangulaire} (section 3, éq. (6)). La matrice diagonale $\text{diag}(1/\sigma_i)$ est celle du cas de l'hétéroscédasticité (exercice 1), pas celui de l'autocorrélation.
+\end{attention}
+
+\textbf{Étape 2 : proposer $\Pm$ (transformation de Prais-Winsten).} D'après le cours (éq. (42)--(44)), la première observation est multipliée par $\sqrt{1-\rho^2}$ et la deuxième est quasi-différenciée ($y_2-\rho y_1$). On divise en plus par $\sigma$ pour obtenir une variance égale à 1 :
+\[
+\Pm=\frac1\sigma\begin{pmatrix}\sqrt{1-\rho^2}&0\\-\rho&1\end{pmatrix}\qquad\text{(triangulaire inférieure).}
+\]
+
+\textbf{Étape 3 : vérifier $\Pm'\Pm=\Om^{-1}$.}
+\[
+\Pm'\Pm=\frac1{\sigma^2}\begin{pmatrix}\sqrt{1-\rho^2}&-\rho\\0&1\end{pmatrix}\begin{pmatrix}\sqrt{1-\rho^2}&0\\-\rho&1\end{pmatrix}
+=\frac1{\sigma^2}\begin{pmatrix}(1-\rho^2)+\rho^2&-\rho\\-\rho&1\end{pmatrix}
+=\frac1{\sigma^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}=\Om^{-1}\ \checkmark
+\]
+
+\begin{reponse}
+$\Pm=\dfrac1\sigma\begin{pmatrix}\sqrt{1-\rho^2}&0\\-\rho&1\end{pmatrix}$ vérifie $\Pm'\Pm=\Om^{-1}$.
+
+Variante : avec la normalisation du cours, $\E[\veps\veps']=\sigma^2\Om$ où $\Om=\frac1{1-\rho^2}\begin{pmatrix}1&\rho\\\rho&1\end{pmatrix}$, on prend $\Pm=\begin{pmatrix}\sqrt{1-\rho^2}&0\\-\rho&1\end{pmatrix}$ (sans le $1/\sigma$) ; les erreurs transformées ont alors la variance $\sigma^2$ au lieu de 1. Les deux versions sont équivalentes pour l'estimation.
+\end{reponse}
+
+\subsection*{(c) Le modèle transformé a des erreurs indépendantes et homoscédastiques}
+
+\textbf{Étape 1 : écrire le modèle transformé.} Avec $\vy=\vi\beta_0+\veps$ (l'énoncé écrit $\Pm\beta_0$ ; il s'agit de $\Pm\vi\,\beta_0$, le régresseur constant transformé) :
+\[
+\Pm\vy=\Pm\vi\,\beta_0+\Pm\veps\iff
+\begin{cases}
+\dfrac{\sqrt{1-\rho^2}\,y_1}{\sigma}=\dfrac{\sqrt{1-\rho^2}}{\sigma}\,\beta_0+\dfrac{\sqrt{1-\rho^2}\,\epsilon_1}{\sigma},\\[3mm]
+\dfrac{y_2-\rho y_1}{\sigma}=\dfrac{1-\rho}{\sigma}\,\beta_0+\dfrac{\epsilon_2-\rho\epsilon_1}{\sigma}=\dfrac{1-\rho}{\sigma}\,\beta_0+\dfrac{u_2}{\sigma}.
+\end{cases}
+\]
+La deuxième erreur transformée est $u_2/\sigma$, car $\epsilon_2-\rho\epsilon_1=u_2$ (définition de l'AR(1)).
+
+\textbf{Étape 2 : espérance.} $\E[\Pm\veps]=\Pm\,\E[\veps]=\mathbf 0$.
+
+\textbf{Étape 3 : variances (homoscédasticité).}
+\[
+\Var\!\left(\frac{\sqrt{1-\rho^2}\,\epsilon_1}{\sigma}\right)=\frac{1-\rho^2}{\sigma^2}\cdot\frac{\sigma^2}{1-\rho^2}=1,
+\qquad
+\Var\!\left(\frac{u_2}{\sigma}\right)=\frac{\sigma^2}{\sigma^2}=1 .
+\]
+Les deux erreurs ont la même variance : le facteur $\sqrt{1-\rho^2}$ sert exactement à ramener la variance de la première observation, $\sigma^2/(1-\rho^2)$, au niveau de celle des $u_t$ (éq. (42) du cours).
+
+\textbf{Étape 4 : covariance (absence de corrélation).}
+\[
+\Cov\!\left(\frac{\sqrt{1-\rho^2}\,\epsilon_1}{\sigma},\frac{u_2}{\sigma}\right)=\frac{\sqrt{1-\rho^2}}{\sigma^2}\,\E[\epsilon_1u_2]=0,
+\]
+car $\E(u_2\mid\epsilon_1)=0$ : le choc $u_2$ est « nouveau », sans lien avec l'erreur passée.
+
+\textbf{Étape 5 : en matrices (comme dans le cours).}
+\[
+\E[\Pm\veps\veps'\Pm']=\Pm\,\Om\,\Pm'=\Pm(\Pm'\Pm)^{-1}\Pm'=\Pm\Pm^{-1}(\Pm')^{-1}\Pm'=\I_2 .
+\]
+
+\begin{reponse}
+Les erreurs transformées $\Pm\veps=\big(\sqrt{1-\rho^2}\,\epsilon_1/\sigma,\ u_2/\sigma\big)'$ ont une espérance nulle, une même variance (1) et une covariance nulle : $\E[\Pm\veps\veps'\Pm']=\I_2$. Elles sont donc \textbf{homoscédastiques et non corrélées} ; elles sont même \textbf{indépendantes}, car $\epsilon_1$ ne dépend que des chocs passés $u_1,u_0,u_{-1},\dots$ (éq. (34) du cours) et $u_2$ est indépendant de ces chocs ($u_t$ i.i.d.). Le modèle transformé satisfait les hypothèses du modèle classique : les MCO appliqués à $\Pm\vy=\Pm\vi\beta_0+\Pm\veps$ donnent l'estimateur MCG, qui est efficace.
+\end{reponse}
+
+\begin{intuition}
+La quasi-différence $y_2-\rho y_1$ retire de $y_2$ la partie de son erreur qui est « héritée » de la période précédente ($\rho\epsilon_1$) : il ne reste que le choc nouveau $u_2$. La première observation n'a pas de passé dans l'échantillon ; on la garde, mais on la « réduit » par $\sqrt{1-\rho^2}$ pour qu'elle ait la même variance que les autres. C'est la différence entre Prais-Winsten (qui garde la première observation ainsi transformée) et Cochrane-Orcutt (qui la supprime et perd de l'information ; section 6.7 du cours).
+\end{intuition}
+
+\subsection*{Pour aller plus loin : l'estimateur MCG de $\beta_0$}
+
+Avec $\vX=\vi$ et $\Om^{-1}=\frac1{\sigma^2}\begin{pmatrix}1&-\rho\\-\rho&1\end{pmatrix}$ :
+\[
+\vi'\Om^{-1}\vi=\frac{2-2\rho}{\sigma^2},\qquad
+\vi'\Om^{-1}\vy=\frac{(1-\rho)(y_1+y_2)}{\sigma^2},\qquad
+\tilde\beta_0=(\vi'\Om^{-1}\vi)^{-1}\vi'\Om^{-1}\vy=\frac{y_1+y_2}{2}.
+\]
+Avec seulement deux observations, la situation est symétrique ($y_1$ et $y_2$ jouent le même rôle), et l'estimateur MCG coïncide avec la moyenne simple des MCO. Sa variance est
+\[
+\Var(\tilde\beta_0)=(\vi'\Om^{-1}\vi)^{-1}=\frac{\sigma^2}{2(1-\rho)}
+\]
+(ici $\Om=\E[\veps\veps']$ contient déjà le facteur de variance, donc pas de $\sigma^2$ devant).
+Vérification directe : $\Var\big(\frac{\epsilon_1+\epsilon_2}{2}\big)=\frac14\big(2\sigma_\epsilon^2+2\rho\sigma_\epsilon^2\big)=\frac{(1+\rho)\sigma^2}{2(1-\rho^2)}=\frac{\sigma^2}{2(1-\rho)}$ \checkmark.
+
+\textbf{Le vrai problème des MCO ici : leur écart-type.} La formule usuelle des MCO, $\sigma_\epsilon^2(\vi'\vi)^{-1}=\sigma_\epsilon^2/2$, ignore la covariance. La vraie variance est $\sigma_\epsilon^2(1+\rho)/2$ : si $\rho>0$, les MCO \textbf{sous-estiment} la variance de $\hat\beta_0$ (d'un facteur $1+\rho$), et les tests $t$ rejettent trop souvent. C'est exactement le message de la section 2.2 du cours : avec des erreurs non sphériques, la variance estimée par MCO est biaisée, d'où les corrections MCG, Newey-West, etc.
+
+\end{document}
