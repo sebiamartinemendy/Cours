@@ -1,0 +1,162 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small Chapitre 7 -- La non-sphéricité des erreurs}\rhead{\small MCG plus efficace que MCO}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vc}{\mathbf{c}}
+\newcommand{\Xs}{\mathbf{X}^{*}}\newcommand{\W}{\mathbf{W}}
+\newcommand{\veps}{\bm{\epsilon}}\newcommand{\vbeta}{\bm{\beta}}\newcommand{\tbeta}{\tilde{\bm{\beta}}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\Pm}{\mathbf{P}}\newcommand{\Om}{\bm{\Omega}}
+\newcommand{\A}{\mathbf{A}}\newcommand{\B}{\mathbf{B}}\newcommand{\D}{\mathbf{D}}
+\newcommand{\Mw}{\mathbf{M}_W}
+\newcommand{\Var}{\operatorname{Var}}\newcommand{\E}{\mathbb{E}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démonstration},#1}
+\newtcolorbox{resultat}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Résultat de l'étape},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Les MCG sont plus efficaces que les MCO}\\[6pt]
+{\large Démonstration pas à pas (chapitre 7, section 3.1 : « laissée comme exercice »)}
+\end{center}
+
+\section*{Le point de départ (cours, section 3.1)}
+
+Modèle : $\vy=\vX\vbeta+\veps$, \ $\E[\veps\mid\vX]=\mathbf 0$, \ $\E[\veps\veps'\mid\vX]=\sigma^2\Om$, avec $\Om$ symétrique et définie positive.
+
+\[
+\Var(\vb\mid\vX)=\sigma^2(\vX'\vX)^{-1}(\vX'\Om\vX)(\vX'\vX)^{-1}\quad\text{(MCO)},\qquad
+\Var(\tbeta\mid\vX)=\sigma^2(\vX'\Om^{-1}\vX)^{-1}\quad\text{(MCG)}.
+\]
+Il faut montrer que $\Var(\vb\mid\vX)-\Var(\tbeta\mid\vX)$ est semi-définie positive. Le cours propose de passer par les inverses :
+\[
+\Var(\tbeta\mid\vX)^{-1}-\Var(\vb\mid\vX)^{-1}=\frac1{\sigma^2}\,\D,\qquad
+\D=\vX'\Om^{-1}\vX-(\vX'\vX)(\vX'\Om\vX)^{-1}(\vX'\vX).
+\]
+L'inverse de $\Var(\vb)$ s'obtient avec $(\A\B\mathbf C)^{-1}=\mathbf C^{-1}\B^{-1}\A^{-1}$ :
+\[
+\Var(\vb\mid\vX)^{-1}=\frac1{\sigma^2}(\vX'\vX)(\vX'\Om\vX)^{-1}(\vX'\vX).
+\]
+
+\begin{idee}
+Réécrire $\D$ sous la forme $\Xs{}'\,\Mw\,\Xs$, où $\Mw$ est une \textbf{matrice de projection} (symétrique, idempotente) du type $\mathbf M$ du chapitre 2. Une telle forme est toujours semi-définie positive, car elle s'écrit comme un « carré » : $(\Mw\Xs)'(\Mw\Xs)$. C'est la même astuce que dans la preuve de Gauss-Markov.
+\end{idee}
+
+\section*{Étape 1 : la matrice $\Pm$ du cours}
+
+$\Om$ étant symétrique et définie positive, il existe une matrice $\Pm$ ($n\times n$) inversible telle que (cours, éq. (6)--(8)) :
+\[
+\Pm'\Pm=\Om^{-1}\qquad\text{et}\qquad \Om=(\Pm'\Pm)^{-1}=\Pm^{-1}(\Pm')^{-1}.
+\]
+
+\section*{Étape 2 : deux matrices transformées}
+
+On définit
+\[
+\Xs=\Pm\vX\qquad\text{(les régresseurs transformés « MCG »)},\qquad\qquad \W=(\Pm')^{-1}\vX .
+\]
+Ce sont deux matrices $n\times K$.
+
+\section*{Étape 3 : réécrire les trois blocs de $\D$}
+
+\textbf{Le premier terme.}
+\[
+\vX'\Om^{-1}\vX=\vX'\Pm'\Pm\vX=(\Pm\vX)'(\Pm\vX)=\Xs{}'\Xs .
+\]
+
+\textbf{Le terme du milieu.} Comme $(\Pm^{-1})'=(\Pm')^{-1}$, on a $\vX'\Pm^{-1}=\big((\Pm')^{-1}\vX\big)'=\W'$, donc
+\[
+\vX'\Om\vX=\vX'\Pm^{-1}(\Pm')^{-1}\vX=\big((\Pm')^{-1}\vX\big)'\big((\Pm')^{-1}\vX\big)=\W'\W .
+\]
+
+\textbf{Le terme $\vX'\vX$.} On insère $\Pm'(\Pm')^{-1}=\I_n$ au milieu :
+\[
+\vX'\vX=\vX'\,\Pm'(\Pm')^{-1}\,\vX=(\Pm\vX)'\big((\Pm')^{-1}\vX\big)=\Xs{}'\W,
+\qquad\text{et en transposant :}\qquad \vX'\vX=\W'\Xs .
+\]
+
+\begin{resultat}
+$\vX'\Om^{-1}\vX=\Xs{}'\Xs$, \qquad $\vX'\Om\vX=\W'\W$, \qquad $\vX'\vX=\Xs{}'\W=\W'\Xs$.
+\end{resultat}
+
+\section*{Étape 4 : faire apparaître une matrice de projection}
+
+On remplace dans $\D$ :
+\begin{align*}
+\D&=\Xs{}'\Xs-\Xs{}'\W\,(\W'\W)^{-1}\,\W'\Xs\\
+&=\Xs{}'\Big[\I_n-\W(\W'\W)^{-1}\W'\Big]\Xs\\
+&=\Xs{}'\,\Mw\,\Xs ,
+\end{align*}
+où $\Mw=\I_n-\W(\W'\W)^{-1}\W'$ est la matrice qui crée les résidus d'une régression sur $\W$ (la matrice $\mathbf M$ du chapitre 2, avec $\W$ à la place de $\vX$). ($\W'\W=\vX'\Om\vX$ est bien inversible : $\Om$ est définie positive et $\vX$ de plein rang.)
+
+$\Mw$ est \textbf{symétrique} ($\Mw'=\Mw$) et \textbf{idempotente} ($\Mw\Mw=\Mw$). Donc
+\[
+\D=\Xs{}'\Mw\Mw\Xs=\Xs{}'\Mw'\Mw\Xs=(\Mw\Xs)'(\Mw\Xs).
+\]
+Pour tout vecteur $\vc\in\mathbb R^K$ :
+\[
+\vc'\D\vc=(\Mw\Xs\vc)'(\Mw\Xs\vc)=\big\|\Mw\Xs\vc\big\|^2\ \ge\ 0 .
+\]
+
+\begin{resultat}
+$\D=(\Mw\Xs)'(\Mw\Xs)$ est \textbf{semi-définie positive}. Donc $\Var(\tbeta\mid\vX)^{-1}-\Var(\vb\mid\vX)^{-1}=\D/\sigma^2$ est semi-définie positive.
+\end{resultat}
+
+\section*{Étape 5 : passer des inverses aux variances}
+
+On utilise un résultat d'algèbre matricielle (Greene, annexe A) :
+
+\begin{tcolorbox}[colback=white,colframe=gray!60!black]
+Si $\A$ et $\B$ sont symétriques définies positives, alors
+\[
+\A-\B\ \text{semi-définie positive}\quad\Longleftrightarrow\quad \B^{-1}-\A^{-1}\ \text{semi-définie positive}.
+\]
+C'est l'analogue matriciel de : si $a\ge b>0$, alors $\frac1b\ge\frac1a$.
+\end{tcolorbox}
+
+Avec $\A=\Var(\tbeta\mid\vX)^{-1}$ et $\B=\Var(\vb\mid\vX)^{-1}$ : on vient de montrer que $\A-\B$ est semi-définie positive, donc $\B^{-1}-\A^{-1}=\Var(\vb\mid\vX)-\Var(\tbeta\mid\vX)$ l'est aussi.
+
+\begin{resultat}[title={Conclusion}]
+\[
+\Var(\vb\mid\vX)-\Var(\tbeta\mid\vX)\quad\text{est semi-définie positive.}
+\]
+Chaque coefficient, et plus généralement toute combinaison linéaire $\vc'\vbeta$, est estimé avec une variance au moins aussi petite par les MCG que par les MCO : $\Var(\vc'\tbeta)\le\Var(\vc'\vb)$. \textbf{Les MCG sont plus efficaces que les MCO.} \hfill$\blacksquare$
+\end{resultat}
+
+\section*{Remarques}
+
+\begin{attention}[title={« Définie » ou « semi-définie » positive ?}]
+Le cours écrit « positive définie », mais en général la différence est seulement \textbf{semi-définie} positive. Elle est nulle quand $\Mw\Xs=\mathbf 0$, et alors MCO et MCG coïncident. C'est le cas :
+\begin{itemize}[nosep]
+\item si $\Om=\I_n$ (erreurs sphériques) ;
+\item dans l'exercice 1 du chapitre, si $\sigma_1^2=\sigma_2^2$ ;
+\item dans l'exercice 2 avec deux observations : les MCG donnent la moyenne simple, comme les MCO.
+\end{itemize}
+\end{attention}
+
+\textbf{Preuve plus courte, par Gauss-Markov.} Dans le modèle transformé $\Pm\vy=\Pm\vX\vbeta+\Pm\veps$, les erreurs sont sphériques : $\E[\Pm\veps\veps'\Pm'\mid\vX]=\sigma^2\I_n$ (cours, éq. (9)). Le théorème de Gauss-Markov s'applique donc à ce modèle, et son estimateur MCO est $\tbeta$ (éq. (10)). Or l'estimateur des MCO du modèle d'origine s'écrit
+\[
+\vb=(\vX'\vX)^{-1}\vX'\vy=(\vX'\vX)^{-1}\vX'\Pm^{-1}\,(\Pm\vy) :
+\]
+il est \emph{linéaire} en $\Pm\vy$ et \emph{sans biais}. Par Gauss-Markov, $\Var(\vb\mid\vX)\ge\Var(\tbeta\mid\vX)$. La démonstration en 5 étapes ci-dessus fait ce calcul explicitement, sans invoquer le théorème.
+
+\begin{intuition}
+Les MCO donnent le même poids à toutes les observations, même aux plus bruitées (hétéroscédasticité) ou aux plus redondantes (autocorrélation : deux observations corrélées apportent moins d'information que deux observations indépendantes). Les MCG pondèrent chaque observation par l'information qu'elle apporte réellement, à travers $\Om^{-1}$. Exemple de l'exercice 1 avec $\sigma_1^2=1$ et $\sigma_2^2=9$ : poids $(0{,}9\ ;\ 0{,}1)$ pour les MCG au lieu de $(0{,}5\ ;\ 0{,}5)$, et une variance de 0,9 au lieu de 2,5.
+\end{intuition}
+
+\end{document}
