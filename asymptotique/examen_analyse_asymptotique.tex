@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{enumitem}
+\setlength{\parskip}{0.4em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\plim}{\operatorname{plim}}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Analyse asymptotique -- Corrigé (format examen)}
+\end{center}
+
+\textbf{Résultat utilisé partout.} $\vb=\vbeta+\big(\frac{\vX'\vX}{n}\big)^{-1}\frac{\vX'\veps}{n}$. Si $\plim\frac{\vX'\vX}{n}=\Q$ (définie positive), par les propriétés des plim (inverse et produit) : $\plim\vb=\vbeta+\Q^{-1}\plim\frac1n\sum\vx_i\epsilon_i=\vbeta+\Q^{-1}\E[\vx_i\epsilon_i]$.
+
+% =====================================================================
+\section*{Exercice 1}
+
+\textbf{1.} $\vb=(\vX'\vX)^{-1}\vX'\vy$, soit $\hat\beta_2=\dfrac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2}$ et $\hat\beta_1=\bar y-\hat\beta_2\bar x$.
+
+\textbf{2.} $\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps$, donc
+\[
+\text{Biais}(\vb\mid\vX)=\E[\vb\mid\vX]-\vbeta=(\vX'\vX)^{-1}\vX'\,\E[\veps\mid\vX]\neq\mathbf 0 .
+\]
+Pour la pente : $\text{Biais}(\hat\beta_2)=\dfrac{\sum(x_i-\bar x)\E[\epsilon_i\mid\vX]}{\sum(x_i-\bar x)^2}$.
+
+\textbf{3.} $\plim\vb=\vbeta+\Q^{-1}\E[\vx_i\epsilon_i]$. La convergence exige seulement $\E[\vx_i\epsilon_i]=\mathbf 0$ (pas de corrélation entre $\epsilon_i$ et les régresseurs de \emph{sa} observation), alors que l'absence de biais exige $\E[\veps\mid\vX]=\mathbf 0$ (avec \emph{toutes} les observations). On peut donc avoir $\E[\veps\mid\vX]\neq\mathbf 0$ et $\plim\vb=\vbeta$. Exemple : $y_t=\beta_1+\beta_2y_{t-1}+\epsilon_t$, $\epsilon_t$ i.i.d. : $\epsilon_t$ est lié à $y_t$ (régresseur de la date $t+1$), donc biais, mais $\E[y_{t-1}\epsilon_t]=0$, donc convergence.
+
+% =====================================================================
+\section*{Exercice 2}
+
+\textbf{1.} Oui. La preuve de convergence ($\plim\vb=\vbeta$ si $\E[\vx_i\epsilon_i]=\mathbf 0$ et $\plim\frac{\vX'\vX}{n}=\Q$) n'utilise pas la normalité. La normalité ne sert qu'à la loi exacte en petit échantillon ; par le TCL, $\vb\overset{a}{\sim}N(\vbeta,\sigma^2(\vX'\vX)^{-1})$ (Greene, ch. 4). Si $\E[\epsilon_i]=\mu\neq0$, seule la constante est affectée : $\plim\hat\beta_0=\beta_0+\mu$.
+
+\textbf{2.} $\hat\beta_1=\dfrac{\sum(x_{1i}-\bar x_1)(y_i-\bar y)}{\sum(x_{1i}-\bar x_1)^2}$, \quad $\hat\beta_0=\bar y-\hat\beta_1\bar x_1$.
+
+\textbf{3.} En remplaçant $y_i$ et en divisant par $n$ :
+\[
+\hat\beta_1=\beta_1+\frac{\frac1n\sum(x_{1i}-\bar x_1)\epsilon_i}{\frac1n\sum(x_{1i}-\bar x_1)^2}
+\ \Longrightarrow\
+\plim\hat\beta_1=\beta_1+\frac{\Cov(x_1,\epsilon)}{\Var(x_1)}\quad(\text{plim d'un quotient}).
+\]
+Donc $\plim\hat\beta_1=\beta_1$ dès que $\Cov(x_1,\epsilon)=0$, même si $\E(\epsilon\mid\vX)\neq0$ : par exemple si $\E(\epsilon\mid\vX)=\mu$ constante, ou si $\epsilon_i$ n'est lié qu'aux régresseurs d'autres observations.
+
+% =====================================================================
+\section*{Exercice 3}
+
+\textbf{1.} $\hat\mu=1{,}1\,\bar y$. \quad $\E(\hat\mu)=1{,}1\,\mu$, \quad $\Var(\hat\mu)=\dfrac{1{,}21\,\sigma^2}{n}$ (indépendance).
+
+\textbf{2.} $\E(\bar y)=\mu$ et $\Var(\bar y)=\sigma^2/n\to0$, donc $\plim\bar y=\mu$. Par la propriété du produit : $\plim\hat\mu=1{,}1\cdot\plim\bar y=1{,}1\,\mu\neq\mu$ (si $\mu\neq0$). $\hat\mu$ n'est pas convergent : sa variance tend vers 0, mais autour de la mauvaise valeur.
+
+% =====================================================================
+\section*{Exercice 4}
+
+\textbf{1. Incertain.} $\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps$ : sa loi exacte dépend de celle de $\veps$. Sous normalité, $\vb\mid\vX\sim N(\vbeta,\sigma^2(\vX'\vX)^{-1})$ exactement ; sans normalité, la loi exacte n'est en général ni normale ni connue (elle pourrait être calculée ou simulée si la loi des erreurs est connue). La loi asymptotique, elle, est connue : $\vb\overset{a}{\sim}N(\vbeta,\sigma^2(\vX'\vX)^{-1})$ (TCL).
+
+\textbf{2. Vrai} (si $\E[\veps\mid\vX]=\mathbf 0$). $\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\E[\veps\mid\vX]=\vbeta$ : la preuve n'utilise pas la normalité. Seule la loi exacte est perdue.
+
+\textbf{3. Faux.} Biaisé : $y_t$ dépend de $\epsilon_t$ et sert de régresseur à la date $t+1$, donc $\E[\veps\mid\vX]\neq\mathbf 0$. Convergent si $\epsilon_t$ i.i.d. et $|\beta_1|<1$ : $y_{t-1}$ ne dépend que de $\epsilon_{t-1},\epsilon_{t-2},\dots$, donc $\E[y_{t-1}\epsilon_t]=0$ et $\plim\hat\beta_1=\beta_1+\dfrac{0}{\Var(y_{t-1})}=\beta_1$. (Si les $\epsilon_t$ sont autocorrélés, $\E[y_{t-1}\epsilon_t]\neq0$ : biaisé et non convergent.)
+
+\end{document}

@@ -1,0 +1,125 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{enumitem}
+\setlength{\parskip}{0.4em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vZ}{\mathbf{Z}}\newcommand{\vb}{\mathbf{b}}
+\newcommand{\vx}{\mathbf{x}}\newcommand{\vu}{\mathbf{u}}\newcommand{\vr}{\mathbf{r}}\newcommand{\Rm}{\mathbf{R}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\vgamma}{\bm{\gamma}}\newcommand{\veps}{\bm{\epsilon}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\Pm}{\mathbf{P}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\plim}{\operatorname{plim}}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Inférence et tests d'hypothèse -- Corrigé (format examen)}
+\end{center}
+
+% =====================================================================
+\section*{Exercice 1}
+(On teste $H_0:\beta_k=0$ contre $H_1:\beta_k\neq0$ ; valeur critique 1,96.)
+
+\textbf{1.} $\text{e.t.}(b_k)=\sqrt{\hat\sigma^2[(\vX'\vX)^{-1}]_{kk}}=\sqrt{1\times0{,}04}=0{,}2$. \quad
+$\text{IC}_{95\%}=b_k\pm1{,}96\times0{,}2=5\pm0{,}392=[4{,}608\ ;\ 5{,}392]$.
+
+\textbf{2.} $t=\dfrac{b_k-0}{\text{e.t.}(b_k)}=\dfrac{5}{0{,}2}=25$.
+
+\textbf{3.} $|t|=25>1{,}96$ : on rejette $H_0$ (0 n'est pas dans l'IC).
+
+\textbf{4.} $p=2P(|T|>25)\approx0<0{,}05$ : sous $H_0$, obtenir une estimation aussi éloignée de 0 est pratiquement impossible. On rejette $H_0$.
+
+% =====================================================================
+\section*{Exercice 2}
+
+\textbf{1.} $\Var(\hat\beta_1+\hat\beta_2)=\Var(\hat\beta_1)+\Var(\hat\beta_2)+2\Cov(\hat\beta_1,\hat\beta_2)=0{,}04+0{,}03+0{,}02=0{,}09$, \ $\text{e.t.}=0{,}3$.
+
+\textbf{2.} $\gamma=\beta_1+\beta_2-2$ ; \ $H_0:\gamma=0$ contre $H_1:\gamma\neq0$.
+
+\textbf{3.} $\hat\gamma=1{,}2+0{,}8-2=0$, \ $\text{e.t.}(\hat\gamma)=0{,}3$, \ $t=0/0{,}3=0$. Comme $|t|=0<2{,}18$, on ne rejette pas $H_0$.
+
+% =====================================================================
+\section*{Exercice 3}
+
+On réordonne pour écrire $\Rm=[\Rm_1\ \Rm_2]$ avec $\Rm_1$ ($r\times r$) inversible, $\vbeta=(\vbeta_1',\vbeta_2')'$, $\vX=[\vX_1\ \vX_2]$. On pose $\vgamma_1=\Rm\vbeta-\vr$, d'où $\vbeta_1=\Rm_1^{-1}(\vgamma_1+\vr-\Rm_2\vbeta_2)$. En substituant :
+\[
+\vy-\vX_1\Rm_1^{-1}\vr=\vX_1\Rm_1^{-1}\,\vgamma_1+\big(\vX_2-\vX_1\Rm_1^{-1}\Rm_2\big)\vbeta_2+\vu .
+\]
+Les restrictions $\Rm\vbeta=\vr$ deviennent les $r$ restrictions nulles $\vgamma_1=\mathbf 0$ (exclusion des $r$ régresseurs $\vX_1\Rm_1^{-1}$).
+
+% =====================================================================
+\section*{Exercice 4}
+
+\textbf{Étapes.} (1) Fixer la graine, $n=25$, générer $x_1$ une fois. (2) Répéter $R\ge100$ fois : $u\sim N(0,1)$, $y=1+0{,}8x_1+u$, MCO, sauvegarder $\hat\beta_1,\hat\beta_2$. (3) Biais estimé $=$ moyenne $-$ vraie valeur. (4) Refaire avec $n=50,100,200$.
+
+\textbf{Résultat attendu.} Le biais est nul (aux erreurs de simulation près) \emph{pour toutes les tailles}, car $\E[\vb\mid\vX]=\vbeta$ dès que $\E[\vu\mid\vX]=\mathbf 0$ : il ne « diminue » pas. Ce qui diminue avec $n$, c'est la variance ($\propto1/n$) : les estimations se concentrent autour de la vraie valeur (convergence). Simulation ($R=1000$) : biais de $\hat\beta_2$ de $+0{,}009$, $-0{,}002$, $+0{,}002$, $-0{,}002$ pour $n=25,50,100,200$ ; écart-type de 0,20 à 0,07.
+
+% =====================================================================
+\section*{Exercice 5}
+
+\textbf{Contraint} ($\beta_3=1-\beta_2$) : \ $y_t-x_{t3}=\beta_1+\beta_2(x_{t2}-x_{t3})+u_t$ ; on régresse $y_t-x_{t3}$ sur une constante et $(x_{t2}-x_{t3})$, puis $\tilde\beta_3=1-\tilde\beta_2$.
+
+\textbf{Non contraint reparamétré} ($\gamma=\beta_2+\beta_3-1$) : \ $y_t-x_{t3}=\beta_1+\beta_2(x_{t2}-x_{t3})+\gamma\,x_{t3}+u_t$. Le coefficient de $x_{t3}$ est $\hat\gamma=\hat\beta_2+\hat\beta_3-1$ : il vaut 0 si la contrainte est exactement respectée par les données, et son $t$ teste $\beta_2+\beta_3=1$.
+
+% =====================================================================
+\section*{Exercice 6}
+
+\textbf{1.} L'omission de $x_2$ biaise $\hat\beta_1$ : $\E[\hat\beta_1]=\beta_1+\beta_2\eta$ (non convergent si $\beta_2\neq0$). L'hétéroscédasticité n'ajoute pas de biais mais change la variance :
+\[
+\Var(\hat\beta_1\mid\vX)=\frac{\sum(x_{1i}-\bar x_1)^2\sigma_i^2}{\big[\sum(x_{1i}-\bar x_1)^2\big]^2}\neq\frac{\sigma^2}{\sum(x_{1i}-\bar x_1)^2}.
+\]
+L'écart-type MCO usuel est donc biaisé (et les MCO inefficaces) ; il faut l'écart-type de White $\sqrt{[(\vX'\vX)^{-1}\vX'\hat{\bm\Sigma}\vX(\vX'\vX)^{-1}]_{22}}$.
+
+\emph{Monte Carlo} : fixer $\beta_0,\beta_1,\beta_2,\eta$, $n$, $R$, graine et $\sigma_i^2=f(x_{1i})$ (ex. $0{,}5+x_{1i}^2$) ; générer $x_1$, $u$, $x_2=\eta x_1+u$ une fois ; à chaque répétition tirer $\epsilon_i=\sigma_iz_i$, générer $y$ avec le vrai modèle, régresser $y$ sur $(1,x_1)$, sauvegarder $\hat\beta_1$, l'écart-type classique et celui de White. \emph{Attendu} : moyenne des $\hat\beta_1\approx\beta_1+\beta_2\eta$ ; l'écart-type empirique des $\hat\beta_1$ diffère de la moyenne des écarts-types classiques mais est proche de la moyenne des écarts-types de White.
+
+\textbf{2.} Dans le modèle complet, avec un $t$ robuste : si la vraie valeur est $\beta_2=0$, on rejette dans environ $\alpha=5\,\%$ des échantillons (erreur de type I ; taille correcte asymptotiquement). Si $\beta_2\neq0$, la proportion est la puissance du test et tend vers 100\,\% quand $n$ augmente.
+
+% =====================================================================
+\section*{Exercice 7}
+(On retient $\Cov(x_i,\epsilon_i)\neq0$ ; l'hypothèse $\E[\epsilon\mid X]=0$ de l'énoncé est contradictoire avec elle.)
+
+\textbf{1.} $\hat\beta=\beta+\dfrac{\frac1n\sum(x_i-\bar x)\epsilon_i}{\frac1n\sum(x_i-\bar x)^2}$, donc $\plim\hat\beta=\beta+\dfrac{\Cov(x,\epsilon)}{\Var(x)}\neq\beta$ : biaisé et non convergent ; le biais a le signe de $\Cov(x,\epsilon)$ et ne disparaît pas avec $n$.
+
+\emph{Monte Carlo} : à chaque répétition, générer $x$ et $\epsilon$ \emph{ensemble} (ex. $\epsilon\sim N(0,1)$, $x=\mu_x+z+0{,}5\epsilon$, $z\sim N(0,1)$), puis $y=\alpha+\beta x+\epsilon$, estimer, sauvegarder $\hat\beta$. \emph{Attendu} : moyenne des $\hat\beta\approx\beta+0{,}5/1{,}25=\beta+0{,}4$, quel que soit $n$.
+
+\textbf{2.} $\plim\hat\alpha=\alpha-\dfrac{\Cov(x,\epsilon)}{\Var(x)}\,\E[x]$. Si $\alpha=0$ et $\E[x]\neq0$ : $\hat\alpha$ ne converge pas vers 0, on rejette $H_0$ bien plus que 5\,\% des fois, et la proportion tend vers 100\,\% quand $n$ augmente. Si $\E[x]=0$ : environ 5\,\%. L'inférence n'est pas fiable avec un régresseur endogène.
+
+% =====================================================================
+\section*{Exercice 8}
+
+\[
+\tilde\beta=(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z(\vX\vbeta+\veps)=\vbeta+(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\veps .
+\]
+$(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z$ ne dépend que de $(\vX,\vZ)$, donc $\E[\tilde\beta\mid\vX,\vZ]=\vbeta+(\vX'\Pm_z\vX)^{-1}\vX'\Pm_z\E[\veps\mid\vX,\vZ]=\vbeta$, et $\E[\tilde\beta]=\vbeta$ (espérances itérées). Sans biais.
+
+% =====================================================================
+\section*{Exercice 9}
+($n-K=1200-4=1196$ ; valeur critique 1,962.)
+
+\textbf{1.} À expérience et statut donnés, une heure de travail hebdomadaire de plus est associée à un salaire annuel plus élevé d'environ 7,6\,\% ($y$ en log ; exactement $e^{0{,}0756}-1=7{,}9\,\%$). Significatif ($t=11{,}14$).
+
+\textbf{2.} À heures et expérience égales, les travailleurs à temps partiel gagnent environ 35,3\,\% de moins que les travailleurs à temps plein (exactement $e^{-0{,}3529}-1=-29{,}7\,\%$).
+
+\textbf{3.} $PartTime_i+FullTime_i=1=$ constante : multicolinéarité parfaite (piège des indicatrices), $\vX'\vX$ non inversible. Le temps plein sert de catégorie de référence.
+
+\textbf{4.} Si $\beta_2=0$, la probabilité d'obtenir une estimation au moins aussi éloignée de 0 est de 5,3\,\%. $0{,}053>0{,}05$ : on ne rejette pas $H_0:\beta_2=0$ à 5\,\% ; on le rejette à 10\,\%.
+
+\textbf{5.} Oui : l'IC à 95\,\%, $[-0{,}402\ ;\ -0{,}304]$, ne contient pas 0, donc on rejette $H_0:\beta_3=0$ à 5\,\%.
+
+\textbf{6.} Non contraint : le modèle estimé, $\text{SCE}_u$. Contraint ($\beta_1=\beta_2=\beta$) : $y_i=\beta_0+\beta(Hours_i+Exper_i)+\beta_3PartTime_i+\epsilon_i$, $\text{SCE}_r$. Avec $r=1$, $K=4$ :
+\[
+F=\frac{\text{SCE}_r-\text{SCE}_u}{\text{SCE}_u}\cdot\frac{1196}{1}\sim F(1,1196)\ \text{sous }H_0 ;\quad\text{rejet si }F>3{,}85 .
+\]
+
+\textbf{7.} Avec $\theta=\beta_1-\beta_2$ : $y_i=\beta_0+\theta\,Hours_i+\beta_2(Hours_i+Exper_i)+\beta_3PartTime_i+\epsilon_i$. Le $t$ du coefficient de $Hours$ teste $H_0:\theta=0$, soit $\beta_1=\beta_2$ ; rejet si $|t|>1{,}962$.
+
+\textbf{8.} $y_i=\beta_0+\beta_1Hours_i+\beta_2Exper_i+\beta_3PartTime_i+\beta_4(PartTime_i\times Hours_i)+\epsilon_i$. Effet d'une heure : $\beta_1$ (temps plein), $\beta_1+\beta_4$ (temps partiel). Test $t$ de $H_0:\beta_4=0$ (exclusion de l'interaction) : $t=\hat\beta_4/\text{e.t.}(\hat\beta_4)\sim t(1195)$, rejet si $|t|>1{,}962$.
+
+\end{document}
