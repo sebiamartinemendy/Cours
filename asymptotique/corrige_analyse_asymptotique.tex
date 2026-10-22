@@ -1,0 +1,271 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=NavyBlue}
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small ECN-6025 -- Analyse asymptotique}\rhead{\small Corrigé des exercices}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+
+\newcommand{\vy}{\mathbf{y}}\newcommand{\vX}{\mathbf{X}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\Q}{\mathbf{Q}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\plim}{\operatorname{plim}}
+\newcommand{\sumi}{\sum_{i=1}^{n}}
+
+\newtcolorbox{idee}[1][]{colback=Cerulean!6,colframe=Cerulean!70!black,fonttitle=\bfseries,title={Idée de la démarche},#1}
+\newtcolorbox{reponse}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,title={Réponse},#1}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{attention}[1][]{colback=BrickRed!5,colframe=BrickRed!75!black,fonttitle=\bfseries,title={Attention},#1}
+\newtcolorbox{greene}[1][]{colback=gray!6,colframe=gray!55!black,fonttitle=\bfseries,title={Référence Greene},#1}
+\newtcolorbox{fiche}[1][]{colback=Orchid!5,colframe=Orchid!70!black,fonttitle=\bfseries,title={Formules de la fiche utilisées},#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Analyse asymptotique : corrigé des exercices}\\[6pt]
+{\large Convergence en probabilité, convergence des MCO, biais et convergence}\\[4pt]
+{\small S'appuie sur W. H. Greene, \emph{Econometric Analysis} (ch. 4, 20 et annexe D) et sur la fiche de formules de l'examen}
+\end{center}
+
+\tableofcontents
+
+% =====================================================================
+\section*{La boîte à outils (fiche de l'examen + Greene)}
+\addcontentsline{toc}{section}{La boîte à outils}
+% =====================================================================
+
+\begin{fiche}[title={La fiche de formules du professeur}]
+\textbf{Définition.} $\plim X_n=C$ si $\lim_{n\to\infty}P(|X_n-C|>\epsilon)=0$ pour tout $\epsilon>0$.
+
+\textbf{Conditions suffisantes} (convergence en moyenne quadratique) : (1) $\lim_{n\to\infty}\E(X_n)=C$ \ et \ (2) $\lim_{n\to\infty}\Var(X_n)=0$.
+
+\textbf{Propriétés} (si $\plim x_n=c$, $\plim y_n=d$) :
+\textbf{(P1)} $\plim(x_n+y_n)=c+d$ ; \ \textbf{(P2)} $\plim(x_ny_n)=cd$ ; \ \textbf{(P3)} $\plim(x_n/y_n)=c/d$ si $d\neq0$ ;
+\textbf{(P4)} $\plim\mathbf W_n^{-1}=\bm\Omega^{-1}$ si $\plim\mathbf W_n=\bm\Omega$ ; \ \textbf{(P5)} $\plim(\mathbf X_n\mathbf Y_n)=\mathbf{AB}$.
+\end{fiche}
+
+\begin{greene}
+Greene présente ces outils dans l'\textbf{annexe D} (« Large-Sample Distribution Theory ») : convergence en probabilité, convergence en moyenne quadratique (les deux conditions suffisantes de la fiche), loi des grands nombres, et le \textbf{théorème de Slutsky} ($\plim g(x_n)=g(\plim x_n)$ pour $g$ continue), dont les propriétés P1 à P5 sont des cas particuliers. Le \textbf{chapitre 4} applique ces outils aux MCO (convergence, normalité asymptotique). La distinction entre « sans biais » et « convergent » dans les modèles dynamiques est au \textbf{chapitre 20}.
+\end{greene}
+
+\textbf{Le résultat central, utilisé dans presque tous les exercices.} Avec $\vy=\vX\vbeta+\veps$ :
+\[
+\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps=\vbeta+\Big(\frac{\vX'\vX}{n}\Big)^{-1}\Big(\frac{\vX'\veps}{n}\Big).
+\]
+(On a multiplié et divisé par $n$ : cela ne change rien, mais chaque morceau devient une \emph{moyenne}, qui a une limite.) Hypothèses de Greene (ch. 4) : $\plim\frac{\vX'\vX}{n}=\Q$, finie et définie positive. Alors, par P5 et P4 :
+\[
+\boxed{\ \plim\vb=\vbeta+\Q^{-1}\cdot\plim\frac{\vX'\veps}{n}=\vbeta+\Q^{-1}\cdot\plim\frac1n\sumi\vx_i\epsilon_i\ }
+\]
+Par la loi des grands nombres, $\plim\frac1n\sum\vx_i\epsilon_i=\E[\vx_i\epsilon_i]$. Donc :
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{4.2cm}p{5.6cm}p{5cm}@{}}
+\toprule
+Propriété & Condition sur les erreurs & Porte sur \\
+\midrule
+\textbf{Sans biais} : $\E[\vb\mid\vX]=\vbeta$ & $\E[\veps\mid\vX]=\mathbf 0$ (exogénéité \emph{stricte}) & chaque $\epsilon_i$ et \textbf{toutes} les observations de $\vX$ \\
+\textbf{Convergent} : $\plim\vb=\vbeta$ & $\E[\vx_i\epsilon_i]=\mathbf 0$ (\emph{non-corrélation contemporaine}) & $\epsilon_i$ et le $\vx_i$ de la \textbf{même} observation \\
+\bottomrule
+\end{tabular}
+\end{center}
+La condition de convergence est \textbf{plus faible} : elle peut tenir même quand celle de l'absence de biais échoue. C'est le fil conducteur des exercices 1, 2 et 4.
+
+
+% =====================================================================
+\section{Exercice 1}
+% =====================================================================
+
+Modèle : $y_i=\beta_1+\beta_2x_i+\epsilon_i$, avec $\E(\epsilon_i\mid\vX)\neq0$.
+
+\subsection*{1. L'estimateur des MCO}
+\begin{reponse}
+En matrices, avec $\vX=[\bm\iota\ \vx]$ : $\vb=(\vX'\vX)^{-1}\vX'\vy$. En formules explicites (régression simple) :
+\[
+\hat\beta_2=\frac{\sumi(x_i-\bar x)(y_i-\bar y)}{\sumi(x_i-\bar x)^2},\qquad \hat\beta_1=\bar y-\hat\beta_2\bar x .
+\]
+Le calcul de l'estimateur ne dépend d'aucune hypothèse sur les erreurs : c'est la solution des équations normales.
+\end{reponse}
+
+\subsection*{2. Le biais de $\hat\beta$}
+
+\begin{idee}
+Écrire l'estimateur en fonction des erreurs, puis prendre l'espérance conditionnelle. Le terme qui disparaissait au chapitre 2 ne disparaît plus.
+\end{idee}
+
+\[
+\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps\quad\Longrightarrow\quad
+\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\,\E[\veps\mid\vX] .
+\]
+Pour la pente, en remplaçant $y_i$ et en utilisant $\sum(x_i-\bar x)=0$ :
+\[
+\hat\beta_2=\beta_2+\frac{\sum(x_i-\bar x)\epsilon_i}{\sum(x_i-\bar x)^2}
+\quad\Longrightarrow\quad
+\text{Biais}(\hat\beta_2\mid\vX)=\frac{\sum(x_i-\bar x)\,\E[\epsilon_i\mid\vX]}{\sum(x_i-\bar x)^2}.
+\]
+
+\begin{reponse}
+$\text{Biais}(\vb\mid\vX)=(\vX'\vX)^{-1}\vX'\,\E[\veps\mid\vX]\neq\mathbf 0$ en général : les MCO sont \textbf{biaisés}. Deux cas particuliers utiles :
+\begin{itemize}[nosep]
+\item si $\E[\epsilon_i\mid\vX]=\alpha_0+\alpha_1x_i$ : biais $\alpha_0$ sur la constante et $\alpha_1$ sur la pente ;
+\item si $\E[\epsilon_i\mid\vX]=\mu$ constante : seule la constante est biaisée ($\sum(x_i-\bar x)\mu=0$, la pente est sans biais).
+\end{itemize}
+\end{reponse}
+
+\subsection*{3. Pourquoi les MCO peuvent rester convergents}
+
+\begin{idee}
+Utiliser le résultat central et les propriétés de la fiche : la convergence ne dépend que de $\plim\frac{\vX'\veps}{n}$, c'est-à-dire de la corrélation entre $\epsilon_i$ et le $\vx_i$ de la \emph{même} observation, pas de $\E[\veps\mid\vX]$.
+\end{idee}
+
+\textbf{Étape 1.} $\vb=\vbeta+\big(\frac{\vX'\vX}{n}\big)^{-1}\big(\frac{\vX'\veps}{n}\big)$.
+
+\textbf{Étape 2 (fiche, P4 et P5).} Si $\plim\frac{\vX'\vX}{n}=\Q$ (définie positive), alors $\plim\big(\frac{\vX'\vX}{n}\big)^{-1}=\Q^{-1}$ (P4), et $\plim\vb=\vbeta+\Q^{-1}\plim\frac{\vX'\veps}{n}$ (P1, P5).
+
+\textbf{Étape 3 (conditions suffisantes de la fiche).} Le vecteur $\frac{\vX'\veps}{n}=\frac1n\sum\vx_i\epsilon_i$ est une moyenne. Si $\E[\vx_i\epsilon_i]=\mathbf 0$ et si sa variance tend vers 0 (observations pas trop dépendantes, variances finies), les deux conditions suffisantes donnent $\plim\frac{\vX'\veps}{n}=\mathbf 0$. Donc $\plim\vb=\vbeta$.
+
+\begin{reponse}
+L'absence de biais exige $\E[\veps\mid\vX]=\mathbf 0$ : chaque erreur doit être non corrélée avec les régresseurs de \textbf{toutes} les observations. La convergence n'exige que $\E[\vx_i\epsilon_i]=\mathbf 0$ : chaque erreur doit être non corrélée avec les régresseurs de \textbf{sa propre} observation. On peut donc avoir $\E[\veps\mid\vX]\neq\mathbf 0$ (MCO biaisés) et $\E[\vx_i\epsilon_i]=\mathbf 0$ (MCO convergents).
+
+\textbf{Exemple type (Greene, ch. 20)} : $y_t=\beta_1+\beta_2y_{t-1}+\epsilon_t$, avec $\epsilon_t$ i.i.d. L'erreur $\epsilon_t$ est indépendante de $y_{t-1}$ (son propre régresseur), donc $\E[y_{t-1}\epsilon_t]=0$ : convergent. Mais $\epsilon_t$ fait partie de $y_t$, qui est le régresseur de l'observation $t+1$ : $\E[\veps\mid\vX]\neq\mathbf 0$, donc biaisé en échantillon fini. Le biais disparaît quand $n\to\infty$.
+\end{reponse}
+
+\begin{attention}
+Si $\epsilon_i$ est corrélé avec \emph{son propre} $x_i$ (variable omise corrélée, simultanéité, erreur de mesure), alors $\plim\frac{\vX'\veps}{n}\neq\mathbf 0$ et les MCO sont biaisés \textbf{et} non convergents : plus de données n'arrangent rien. Il faut alors des variables instrumentales (Greene, ch. 8).
+\end{attention}
+
+% =====================================================================
+\section{Exercice 2}
+% =====================================================================
+
+Modèle : $y_i=\beta_0+\beta_1x_{1i}+\epsilon_i$, erreurs qui ne suivent pas une loi normale centrée.
+
+\subsection*{1. Les MCO sont-ils convergents ?}
+
+\begin{reponse}
+\textbf{Oui}, si $\E[x_{1i}\epsilon_i]=0$ (et $\E[\epsilon_i]=0$ pour la constante) et si $\plim\frac{\vX'\vX}{n}=\Q$ est définie positive. La normalité n'intervient \textbf{nulle part} dans la preuve de convergence (résultat central ci-dessus) : elle ne sert qu'à connaître la loi \emph{exacte} de $\vb$ en petit échantillon. Sans normalité, le théorème central limite donne quand même la loi \emph{asymptotique} (Greene, ch. 4) :
+\[
+\sqrt n(\vb-\vbeta)\ \xrightarrow{d}\ N\big(\mathbf 0,\ \sigma^2\Q^{-1}\big),\qquad\text{soit}\qquad \vb\overset{a}{\sim}N\big(\vbeta,\ \sigma^2(\vX'\vX)^{-1}\big).
+\]
+Si « non centrée » signifie $\E[\epsilon_i]=\mu\neq0$ (constante), seule la constante est affectée : $\plim\hat\beta_0=\beta_0+\mu$, alors que $\plim\hat\beta_1=\beta_1$ (voir 3).
+\end{reponse}
+
+\subsection*{2. L'expression de l'estimateur}
+\[
+\hat\beta_1=\frac{\sumi(x_{1i}-\bar x_1)(y_i-\bar y)}{\sumi(x_{1i}-\bar x_1)^2},\qquad \hat\beta_0=\bar y-\hat\beta_1\bar x_1,\qquad\text{ou}\quad \vb=(\vX'\vX)^{-1}\vX'\vy .
+\]
+
+\subsection*{3. $\hat\beta_1$ convergent même si $\E(\epsilon\mid\vX)\neq0$}
+
+\textbf{Étape 1 : écrire $\hat\beta_1$ comme un rapport de moyennes.} En remplaçant $y_i$ et en divisant numérateur et dénominateur par $n$ :
+\[
+\hat\beta_1=\beta_1+\frac{\frac1n\sum(x_{1i}-\bar x_1)\epsilon_i}{\frac1n\sum(x_{1i}-\bar x_1)^2}
+=\beta_1+\frac{\widehat{\Cov}(x_1,\epsilon)}{\widehat{\Var}(x_1)} .
+\]
+
+\textbf{Étape 2 : limites des moyennes.} Par la loi des grands nombres, $\plim\widehat{\Cov}(x_1,\epsilon)=\Cov(x_1,\epsilon)$ et $\plim\widehat{\Var}(x_1)=\Var(x_1)>0$.
+
+\textbf{Étape 3 : fiche, propriétés P3 (quotient) et P1 (somme).}
+\[
+\plim\hat\beta_1=\beta_1+\frac{\Cov(x_1,\epsilon)}{\Var(x_1)} .
+\]
+
+\begin{reponse}
+$\hat\beta_1$ est convergent dès que $\Cov(x_{1i},\epsilon_i)=0$, même si $\E[\epsilon\mid\vX]\neq0$. Deux situations où c'est le cas :
+\begin{enumerate}[nosep]
+\item $\E[\epsilon_i\mid\vX]=\mu$ \textbf{constante non nulle} : $\Cov(x_1,\epsilon)=0$, donc $\plim\hat\beta_1=\beta_1$ ; seule la constante converge vers $\beta_0+\mu$ ;
+\item \textbf{dépendance entre observations} : $\epsilon_i$ est lié aux régresseurs d'\emph{autres} observations, mais pas au sien (exemple du modèle dynamique de l'exercice 1). Alors $\hat\beta_1$ est biaisé en échantillon fini mais convergent.
+\end{enumerate}
+En revanche, si $\Cov(x_{1i},\epsilon_i)\neq0$, $\hat\beta_1$ converge vers $\beta_1+\Cov/\Var\neq\beta_1$ : non convergent.
+\end{reponse}
+
+% =====================================================================
+\section{Exercice 3 : $\hat\mu=\frac{1{,}1}{n}\sum y_i$}
+% =====================================================================
+
+$Y_i$ i.i.d.$(\mu,\sigma^2)$, \ $\hat\mu=\dfrac{1{,}1}{n}\sumi y_i=1{,}1\,\bar y$.
+
+\subsection*{1. Espérance et variance}
+\[
+\E(\hat\mu)=\frac{1{,}1}{n}\sumi\E(y_i)=\frac{1{,}1}{n}\cdot n\mu=1{,}1\,\mu,
+\qquad
+\Var(\hat\mu)=\frac{1{,}1^2}{n^2}\sumi\Var(y_i)=\frac{1{,}21\,\sigma^2}{n}.
+\]
+(Indépendance : pas de covariances.) $\hat\mu$ est biaisé : $\text{Biais}=0{,}1\,\mu$.
+
+\subsection*{2. $\hat\mu$ n'est pas convergent}
+
+\begin{attention}
+On ne peut pas conclure seulement en disant « la condition suffisante (1) n'est pas vérifiée » : ce sont des conditions \emph{suffisantes}, pas nécessaires. Il faut calculer $\plim\hat\mu$ et montrer qu'il est différent de $\mu$.
+\end{attention}
+
+\textbf{Étape 1 : $\plim\bar y=\mu$} (loi des grands nombres), par les conditions suffisantes de la fiche : $\E(\bar y)=\mu$ pour tout $n$ et $\Var(\bar y)=\sigma^2/n\to0$.
+
+\textbf{Étape 2 : fiche, propriété P2 (produit)}, avec $x_n=1{,}1$ (constante, $\plim=1{,}1$) et $y_n=\bar y$ :
+\[
+\plim\hat\mu=\plim(1{,}1\cdot\bar y)=1{,}1\cdot\plim\bar y=1{,}1\,\mu .
+\]
+
+\textbf{Étape 3.} Le $\plim$ est unique ; or $1{,}1\,\mu\neq\mu$ dès que $\mu\neq0$.
+
+\begin{reponse}
+$\plim\hat\mu=1{,}1\,\mu\neq\mu$ (si $\mu\neq0$) : $\hat\mu$ \textbf{n'est pas convergent}. Sa variance tend bien vers 0, mais il se concentre autour de la \emph{mauvaise} valeur. Le biais $0{,}1\mu$ ne dépend pas de $n$ : il ne disparaît jamais. À comparer avec $\frac1{n-1}\sum y_i$ (intra 2021), biaisé mais convergent, car son biais $\mu/(n-1)$ tend vers 0.
+\end{reponse}
+
+% =====================================================================
+\section{Exercice 4 : vrai, faux ou incertain}
+% =====================================================================
+
+\subsection*{1. Sans normalité, impossible de connaître la loi exacte de $\hat\beta_{MCO}$ ?}
+
+\begin{reponse}
+\textbf{Incertain (vrai en pratique).} $\vb=\vbeta+(\vX'\vX)^{-1}\vX'\veps$ est une combinaison linéaire des erreurs. Sa loi exacte dépend donc de la loi de $\veps$ :
+\begin{itemize}[nosep]
+\item sous normalité, une combinaison linéaire de normales est normale : $\vb\mid\vX\sim N(\vbeta,\sigma^2(\vX'\vX)^{-1})$ \textbf{exactement} ;
+\item sans normalité, la loi exacte n'est en général \textbf{ni normale ni connue sous forme simple} ; si la loi des erreurs est connue, on pourrait en principe la calculer ou la simuler (Monte Carlo), mais elle n'a pas de formule utilisable.
+\end{itemize}
+Ce que l'on connaît toujours (Greene, ch. 4, par le théorème central limite) : la loi \textbf{asymptotique}, $\vb\overset{a}{\sim}N(\vbeta,\sigma^2(\vX'\vX)^{-1})$. C'est elle qui justifie les tests $t$ et $F$ en grand échantillon sans normalité.
+\end{reponse}
+
+\subsection*{2. Sans normalité, on ne connaît pas la loi exacte, mais $\hat\beta$ reste sans biais ?}
+
+\begin{reponse}
+\textbf{Vrai} (à condition que $\E[\veps\mid\vX]=\mathbf 0$). La preuve de l'absence de biais, $\E[\vb\mid\vX]=\vbeta+(\vX'\vX)^{-1}\vX'\E[\veps\mid\vX]=\vbeta$, n'utilise que la linéarité, le plein rang et l'exogénéité : la normalité n'y joue aucun rôle. De même, sous homoscédasticité, $\vb$ reste BLUE (Gauss-Markov n'exige pas la normalité). Seule la loi exacte est perdue (point 1).
+\end{reponse}
+
+\subsection*{3. Dans $y_t=\beta_0+\beta_1y_{t-1}+\epsilon_t$, les MCO sont sans biais et convergents ?}
+
+\begin{idee}
+Vérifier séparément les deux conditions du tableau de la boîte à outils : $\E[\veps\mid\vX]=\mathbf 0$ (pour le biais) et $\E[y_{t-1}\epsilon_t]=0$ (pour la convergence).
+\end{idee}
+
+\textbf{Absence de biais : non.} La matrice des régresseurs contient $y_1,y_2,\dots,y_{T-1}$. Or $y_t=\beta_0+\beta_1y_{t-1}+\epsilon_t$ dépend de $\epsilon_t$, et $y_t$ est le régresseur de l'observation $t+1$. Donc $\epsilon_t$ est corrélé avec un élément de $\vX$ : $\E[\epsilon_t\mid\vX]\neq0$. Concrètement,
+\[
+\hat\beta_1=\beta_1+\frac{\sum(y_{t-1}-\bar y_{-1})\epsilon_t}{\sum(y_{t-1}-\bar y_{-1})^2},
+\]
+et le dénominateur contient des $y_t$ qui dépendent des $\epsilon_t$ du numérateur : l'espérance du rapport n'est pas nulle. Pour $T$ petit, $\hat\beta_1$ est biaisé vers le bas (biais d'environ $-(1+3\beta_1)/T$, approximation classique de Kendall, pour un modèle avec constante).
+
+\textbf{Convergence : oui, si $\epsilon_t$ est i.i.d. et $|\beta_1|<1$.} $y_{t-1}$ ne dépend que de $\epsilon_{t-1},\epsilon_{t-2},\dots$, indépendants de $\epsilon_t$, donc $\E[y_{t-1}\epsilon_t]=0$. Par la loi des grands nombres (le processus est stationnaire si $|\beta_1|<1$) et les propriétés P3 et P1 de la fiche :
+\[
+\plim\hat\beta_1=\beta_1+\frac{\plim\frac1T\sum(y_{t-1}-\bar y_{-1})\epsilon_t}{\plim\frac1T\sum(y_{t-1}-\bar y_{-1})^2}=\beta_1+\frac{0}{\Var(y_{t-1})}=\beta_1 .
+\]
+
+\begin{reponse}
+\textbf{Faux.} Les MCO sont \textbf{biaisés} en échantillon fini (l'exogénéité stricte $\E[\veps\mid\vX]=\mathbf 0$ échoue), mais \textbf{convergents} si les erreurs sont i.i.d. et $|\beta_1|<1$ (il suffit que $\E[y_{t-1}\epsilon_t]=0$). C'est exactement le résultat du chapitre 7 du cours (section 8) et de Greene (ch. 20).
+
+\textbf{Attention} : si les erreurs sont elles-mêmes autocorrélées ($\epsilon_t=\rho\epsilon_{t-1}+u_t$), alors $y_{t-1}$ contient $\epsilon_{t-1}$, qui est corrélé avec $\epsilon_t$ : $\E[y_{t-1}\epsilon_t]\neq0$, et les MCO sont biaisés \textbf{et non convergents} (il faut des variables instrumentales).
+\end{reponse}
+
+\end{document}
