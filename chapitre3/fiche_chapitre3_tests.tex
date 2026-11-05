@@ -1,0 +1,90 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+\pagestyle{empty}
+
+\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newtcolorbox{outil}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Chapitre 3 -- Tests d'hypothèse}\\[4pt]
+{\large La fiche simple}
+\end{center}
+
+\section*{1. L'idée}
+
+On a estimé un coefficient, par exemple $\hat b = 0{,}2$. On veut savoir si le vrai coefficient pourrait être 0.
+
+\textbf{On se pose une seule question :} si le vrai coefficient était 0, est-ce qu'obtenir 0,2 serait \emph{rare} ?
+\begin{itemize}
+\item Si c'est rare (moins de 5\,\% de chances) : on \textbf{rejette} $H_0$.
+\item Sinon : on \textbf{ne rejette pas} $H_0$.
+\end{itemize}
+
+\section*{2. Les outils}
+
+\begin{outil}[title={Test $t$ : tester UN coefficient}]
+\textbf{Formule :}\quad $t=\dfrac{\text{estimation}-\text{valeur testée}}{\text{écart-type}}=\dfrac{b_k-\beta_{k,0}}{\text{e.t.}(b_k)}$
+
+\textbf{Règle :}\quad on rejette $H_0$ si $|t|>$ valeur critique \quad (environ \textbf{1,96} à 5\,\%).
+\end{outil}
+
+\begin{outil}[title={$p$-value : la même décision, autrement}]
+\textbf{En mots :} la probabilité d'obtenir un résultat aussi extrême si $H_0$ est vraie.
+
+\textbf{Règle :}\quad on rejette $H_0$ si $p<0{,}05$.
+\end{outil}
+
+\begin{outil}[title={Intervalle de confiance à 95\,\%}]
+\textbf{Formule :}\quad $b_k\ \pm\ 1{,}96\times\text{e.t.}(b_k)$
+
+\textbf{Règle :}\quad si 0 n'est \textbf{pas} dans l'intervalle, on rejette $\beta_k=0$.
+\end{outil}
+
+\begin{outil}[title={Tester une SOMME de coefficients : $\beta_1+\beta_2=1$}]
+\textbf{Formule :}\quad $t=\dfrac{b_1+b_2-1}{\text{e.t.}(b_1+b_2)}$, \quad avec \quad $\Var(b_1+b_2)=\Var(b_1)+\Var(b_2)+\mathbf{2\,Cov}(b_1,b_2)$
+
+\textbf{À ne pas oublier :} la covariance.
+\end{outil}
+
+\begin{outil}[title={Test $F$ : tester PLUSIEURS restrictions à la fois}]
+\textbf{Formule :}\quad $F=\dfrac{\text{SCE}_r-\text{SCE}_u}{\text{SCE}_u}\times\dfrac{n-K}{J}$
+
+$\text{SCE}_r$ : modèle avec les restrictions ; $\text{SCE}_u$ : modèle sans restriction ; $J$ : nombre de restrictions.
+
+\textbf{Règle :}\quad on rejette $H_0$ si $F>$ valeur critique.
+\end{outil}
+
+\newpage
+\section*{3. Un exemple (celui du cours)}
+
+$H_0:\beta_3=0{,}5$. On a trouvé $b_3=0{,}77$ et $\text{e.t.}(b_3)=0{,}12$, avec $n-K=11$.
+
+\begin{enumerate}
+\item $t=\dfrac{0{,}77-0{,}5}{0{,}12}=2{,}25$
+\item Valeur critique à 5\,\% avec 11 degrés de liberté : 2,201.
+\item $2{,}25>2{,}201$ : on \textbf{rejette} $H_0$. (La $p$-value vaut 0,046, qui est bien inférieure à 0,05.)
+\end{enumerate}
+
+\section*{4. Les 5 choses à retenir}
+
+\begin{enumerate}[itemsep=4pt]
+\item \textbf{Erreur de type I} = rejeter $H_0$ alors qu'elle est vraie. Elle arrive avec une probabilité de 5\,\% si $\alpha=5\,\%$.
+\item \textbf{Degrés de liberté} = $n-K$ (nombre d'observations moins nombre de coefficients).
+\item \textbf{Grand échantillon} : on utilise 1,96 à 5\,\%. \textbf{Petit échantillon} : on lit la table de Student avec $n-K$.
+\item \textbf{Intervalle de confiance} : on ne dit pas « 95\,\% de chances que $\beta$ soit dedans », mais « 95\,\% des intervalles construits ainsi contiennent le vrai $\beta$ ».
+\item \textbf{Variables très corrélées} (multicolinéarité) : les tests $t$ peuvent être non significatifs alors que le test $F$ l'est. Cela veut dire qu'au moins une variable compte, sans savoir laquelle.
+\end{enumerate}
+
+\end{document}
