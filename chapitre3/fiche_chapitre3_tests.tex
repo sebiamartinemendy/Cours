@@ -87,4 +87,52 @@ $H_0:\beta_3=0{,}5$. On a trouvé $b_3=0{,}77$ et $\text{e.t.}(b_3)=0{,}12$, ave
 \item \textbf{Variables très corrélées} (multicolinéarité) : les tests $t$ peuvent être non significatifs alors que le test $F$ l'est. Cela veut dire qu'au moins une variable compte, sans savoir laquelle.
 \end{enumerate}
 
+\section*{5. Les compléments utiles à l'examen}
+
+\begin{outil}[title={Reparamétrisation : faire le test d'une somme avec un simple $t$}]
+\textbf{À quoi ça sert :} tester $\beta_1+\beta_2=1$ sans calculer la covariance.
+
+\textbf{Méthode :} poser $\theta=\beta_1+\beta_2-1$, donc $\beta_1=\theta-\beta_2+1$, et remplacer dans le modèle :
+\[
+y_i-x_{1i}=\beta_0+\theta\,x_{1i}+\beta_2\,(x_{2i}-x_{1i})+\epsilon_i
+\]
+\textbf{Règle :} le $t$ du coefficient de $x_{1i}$ teste directement $\theta=0$, c'est-à-dire $\beta_1+\beta_2=1$.
+\end{outil}
+
+\begin{outil}[title={Test unilatéral : quand l'alternative a un seul sens}]
+\textbf{Exemple :} $H_0:\beta_k\le0$ contre $H_1:\beta_k>0$.
+
+\textbf{Règle :} on rejette si $t>1{,}65$ (à 5\,\%, un seul côté). La $p$-value est la moitié de la $p$-value bilatérale.
+\end{outil}
+
+\begin{outil}[title={Test $F$ : toutes les pentes sont-elles nulles ?}]
+\textbf{Hypothèse :} $H_0$ : tous les coefficients sauf la constante valent 0.
+
+\textbf{Formule :} même $F$ que page 1, avec $J=K-1$ ; le modèle contraint est $y$ sur une constante seulement.
+
+\textbf{Règle :} rejet si $F>F^*(K-1,\,n-K)$. Les logiciels l'affichent en haut du tableau (« F » et « Prob $>$ F »).
+\end{outil}
+
+\begin{outil}[title={Écrire plusieurs restrictions sous la forme $R\beta=q$}]
+\textbf{Exemple :} $H_0:\beta_2=1$ et $\beta_3=1$ dans $y=\beta_0+\beta_1x_1+\beta_2x_2+\beta_3x_3+\epsilon$ :
+\[
+\underbrace{\begin{pmatrix}0&0&1&0\\0&0&0&1\end{pmatrix}}_{R}\begin{pmatrix}\beta_0\\\beta_1\\\beta_2\\\beta_3\end{pmatrix}=\underbrace{\begin{pmatrix}1\\1\end{pmatrix}}_{q}
+\]
+\textbf{Règle :} $R$ a une ligne par restriction, donc $J$ = nombre de lignes. On transforme chaque restriction en « un coefficient vaut 0 » (comme la reparamétrisation), puis on fait le test $F$.
+\end{outil}
+
+\begin{outil}[title={Multicolinéarité : pourquoi la variance augmente}]
+\textbf{Formule :}\quad $\Var(b_k)=\dfrac{\sigma^2}{x_k'x_k\,(1-R_k^2)}$
+
+$R_k^2$ : $R^2$ (non centré) de la régression de $x_k$ sur les autres variables.
+
+\textbf{En mots :} plus $x_k$ ressemble aux autres variables ($R_k^2$ proche de 1), plus sa variance est grande et plus son $t$ est petit.
+\end{outil}
+
+\begin{outil}[title={Après un Monte Carlo : l'estimateur est-il sans biais ?}]
+\textbf{Formule :}\quad $\tau=\dfrac{\bar b^*-\beta_k}{\sqrt{\widehat{\Var}(b^*)/R}}$ \quad ($\bar b^*$ : moyenne des $R$ estimations simulées)
+
+\textbf{Règle :} si $|\tau|<1{,}96$, on ne rejette pas l'absence de biais.
+\end{outil}
+
 \end{document}
