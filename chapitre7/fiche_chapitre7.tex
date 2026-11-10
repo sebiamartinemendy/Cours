@@ -1,0 +1,170 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+\pagestyle{empty}
+
+\newcommand{\vX}{\mathbf{X}}\newcommand{\vy}{\mathbf{y}}\newcommand{\vb}{\mathbf{b}}\newcommand{\ve}{\mathbf{e}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\Om}{\bm{\Omega}}\newcommand{\Pm}{\mathbf{P}}
+\newcommand{\I}{\mathbf{I}}\newcommand{\D}{\mathbf{D}}\newcommand{\Mm}{\mathbf{M}}\newcommand{\W}{\mathbf{W}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newtcolorbox{outil}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,#1}
+\newtcolorbox{dev}[1][]{colback=Cerulean!5,colframe=Cerulean!70!black,fonttitle=\bfseries,breakable,#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Chapitre 7 -- Erreurs non sphériques}\\[4pt]
+{\large La fiche simple}
+\end{center}
+
+\section*{1. L'idée}
+
+Jusqu'ici on supposait $\E[\veps\veps'\mid\vX]=\sigma^2\I$ : toutes les erreurs ont la \textbf{même variance} et ne sont \textbf{pas corrélées} entre elles (erreurs « sphériques »). Deux problèmes peuvent casser cette hypothèse :
+\begin{itemize}
+\item \textbf{Hétéroscédasticité} : la variance change d'une observation à l'autre ($\sigma_i^2$).
+\item \textbf{Autocorrélation} : les erreurs sont corrélées entre elles (souvent dans le temps).
+\end{itemize}
+On écrit alors $\E[\veps\veps'\mid\vX]=\sigma^2\Om$.
+
+\textbf{Conséquences pour les MCO :} toujours \textbf{sans biais}, mais \textbf{inefficaces}, et l'écart-type affiché par le logiciel est \textbf{faux}, donc les tests $t$ et $F$ habituels aussi.
+
+\textbf{Deux solutions :} (1) les \textbf{MCG} : transformer le modèle pour retrouver des erreurs sphériques ; (2) garder les MCO mais utiliser des \textbf{écarts-types robustes} (White, Newey-West, clusters).
+
+\section*{2. Les outils}
+
+\begin{outil}[title={MCO avec erreurs non sphériques}]
+\textbf{Sans biais :}\quad $\E[\vb\mid\vX]=\vbeta$ \quad (il suffit que $\E[\veps\mid\vX]=\mathbf 0$).
+
+\textbf{Vraie variance :}\quad $\Var(\vb\mid\vX)=\sigma^2(\vX'\vX)^{-1}\vX'\Om\vX(\vX'\vX)^{-1}\ \neq\ \sigma^2(\vX'\vX)^{-1}$
+\end{outil}
+
+\begin{outil}[title={MCG : l'estimateur efficace (si $\Om$ est connue)}]
+\textbf{Idée :} trouver $\Pm$ telle que $\Pm'\Pm=\Om^{-1}$, puis appliquer les MCO à $\Pm\vy=\Pm\vX\vbeta+\Pm\veps$ (erreurs redevenues sphériques).
+\[
+\tilde\vbeta=(\vX'\Om^{-1}\vX)^{-1}\vX'\Om^{-1}\vy,\qquad \Var(\tilde\vbeta\mid\vX)=\sigma^2(\vX'\Om^{-1}\vX)^{-1}
+\]
+Sans biais et plus efficace que les MCO (démonstration en section 3).
+\end{outil}
+
+\begin{outil}[title={Hétéroscédasticité : les MCGE}]
+\textbf{Transformation :} $\Pm=\text{diag}(1/\sigma_1,\dots,1/\sigma_n)$, c'est-à-dire diviser chaque observation par son écart-type.
+
+\textbf{Comme $\sigma_i$ est inconnu (3 étapes) :} (1) MCO, garder les résidus $e_i$ ; (2) estimer la fonction scédastique, par ex. $\ln e_i^2=\gamma_0+\gamma_1x_{1i}+\dots$ ; (3) diviser chaque observation par $\hat\sigma_i=\sqrt{\exp(\hat\gamma_0+\hat\gamma_1x_{1i}+\dots)}$ et refaire les MCO.
+\end{outil}
+
+\begin{outil}[title={Hétéroscédasticité : écarts-types robustes de White}]
+\textbf{Idée :} garder les MCO, corriger seulement la variance.
+\[
+\widehat\Var(\vb)=(\vX'\vX)^{-1}\Big(\sum_i e_i^2\,\mathbf x_i\mathbf x_i'\Big)(\vX'\vX)^{-1}
+\]
+On s'en sert pour les tests $t$ ; pour plusieurs restrictions $R\vbeta=q$, on utilise le test de Wald :
+$W=(R\vb-q)'\big[R\,\widehat\Var(\vb)\,R'\big]^{-1}(R\vb-q)\sim\chi^2(J)$.
+\end{outil}
+
+\begin{outil}[title={Tests d'hétéroscédasticité}]
+\textbf{Principe :} régresser $e_i^2$ (résidus MCO au carré) sur des variables explicatives. Si elles expliquent $e_i^2$, la variance n'est pas constante.
+
+\textbf{White :} $e_i^2$ sur les $x$, leurs carrés et leurs produits ; \ $nR^2\sim\chi^2(P-1)$.\\
+\textbf{Breusch-Pagan :} même idée avec $e_i^2/\hat\sigma^2-1$ ; \ $LM\sim\chi^2(P)$.\\
+\textbf{Règle :} $p<0{,}05$ $\Rightarrow$ on rejette l'homoscédasticité.
+\end{outil}
+
+\begin{outil}[title={Autocorrélation AR(1) : $\epsilon_t=\rho\epsilon_{t-1}+u_t$, \ $|\rho|<1$}]
+\[
+\Var(\epsilon_t)=\frac{\sigma_u^2}{1-\rho^2},\qquad \Cov(\epsilon_t,\epsilon_{t-s})=\rho^s\,\frac{\sigma_u^2}{1-\rho^2}
+\]
+\textbf{En mots :} la corrélation diminue quand les dates s'éloignent ($\rho^s\to0$).
+\end{outil}
+
+\begin{outil}[title={AR(1) : la transformation MCG (Prais-Winsten)}]
+\[
+y_t^*=y_t-\rho y_{t-1},\quad x_t^*=x_t-\rho x_{t-1}\ \ (t\ge2);\qquad y_1^*=\sqrt{1-\rho^2}\,y_1,\quad x_1^*=\sqrt{1-\rho^2}\,x_1
+\]
+L'erreur transformée est $u_t$ (sans autocorrélation). Cochrane-Orcutt fait la même chose mais \textbf{supprime} la 1\textsuperscript{re} observation. $\rho$ inconnu : on l'estime par la régression $e_t=\rho e_{t-1}+\eta_t$, puis on transforme (et on peut répéter).
+\end{outil}
+
+\begin{outil}[title={Tests d'autocorrélation}]
+\textbf{Breusch-Godfrey :} régresser $e_t$ sur $x_t$ et $e_{t-1}$ ; tester le coefficient de $e_{t-1}$ ($t$ ou $nR^2\sim\chi^2(1)$).
+
+\textbf{Durbin-Watson :}\quad $d=\dfrac{\sum_{t=2}^{T}(e_t-e_{t-1})^2}{\sum_{t}e_t^2}\approx2(1-r)$ \quad ($r$ : corrélation entre $e_t$ et $e_{t-1}$).\\
+$d\approx2$ : pas d'autocorrélation ; $d$ proche de 0 : autocorrélation positive. Rejet si $d<d_L$, non-rejet si $d>d_U$, zone indéterminée entre les deux. Pas valable si $y_{t-1}$ est un régresseur.
+\end{outil}
+
+\begin{outil}[title={Écarts-types robustes : Newey-West et clusters}]
+\textbf{Newey-West :} comme White, mais on ajoute les covariances des erreurs jusqu'à $L$ périodes (en pratique $L\approx T^{1/4}$). Robuste à l'hétéroscédasticité \emph{et} à l'autocorrélation. Stata : \texttt{newey y x, lag(L)}.
+
+\textbf{Clusters :} les erreurs sont corrélées \emph{à l'intérieur} d'un groupe (classe, entreprise, ville) mais pas entre groupes :
+\[
+\widehat\Var(\vb)=(\vX'\vX)^{-1}\Big(\sum_{g=1}^{G}\hat{\mathbf s}_g\hat{\mathbf s}_g'\Big)(\vX'\vX)^{-1},\qquad \hat{\mathbf s}_g=\vX_g'\ve_g
+\]
+\textbf{Règle pratique :} regrouper au niveau le plus large (l'établissement plutôt que la classe), ou au niveau du traitement.
+\end{outil}
+
+\section*{3. Les formules développées (le cours ne les démontre pas)}
+
+\begin{dev}[title={(a) Pourquoi les MCG sont plus efficaces que les MCO}]
+On veut montrer que $\Var(\tilde\vbeta)^{-1}-\Var(\vb)^{-1}=\frac1{\sigma^2}\D$ est positive, avec
+$\D=\vX'\Om^{-1}\vX-(\vX'\vX)(\vX'\Om\vX)^{-1}(\vX'\vX)$.
+
+\textbf{Étape 1.} Avec $\Pm'\Pm=\Om^{-1}$ (donc $\Om=\Pm^{-1}\Pm'^{-1}$), poser $\vX^*=\Pm\vX$ et $\W=\Pm'^{-1}\vX$.
+
+\textbf{Étape 2.} Réécrire les trois morceaux :
+\[
+\vX'\Om^{-1}\vX=\vX^{*\prime}\vX^*,\qquad \vX'\Om\vX=\W'\W,\qquad \vX'\vX=\vX'\Pm'\Pm'^{-1}\vX=\vX^{*\prime}\W .
+\]
+\textbf{Étape 3.} Remplacer :
+\[
+\D=\vX^{*\prime}\vX^*-\vX^{*\prime}\W(\W'\W)^{-1}\W'\vX^*=\vX^{*\prime}\,\Mm_W\,\vX^*=(\Mm_W\vX^*)'(\Mm_W\vX^*)\ \ge0 ,
+\]
+car $\Mm_W=\I-\W(\W'\W)^{-1}\W'$ est symétrique et idempotente (comme la matrice $\Mm$ du chapitre 2).
+
+\textbf{Étape 4.} Si $A^{-1}-B^{-1}\ge0$ alors $B-A\ge0$ (comme pour les nombres : si $1/a\ge1/b>0$, alors $b\ge a$). Donc $\Var(\vb)-\Var(\tilde\vbeta)\ge0$ : les MCG sont plus efficaces.
+\end{dev}
+
+\begin{dev}[title={(b) Pourquoi $d\approx2(1-r)$ (Durbin-Watson)}]
+On développe le carré au numérateur :
+\[
+\sum_{t=2}^{T}(e_t-e_{t-1})^2=\sum_{t=2}^{T}e_t^2+\sum_{t=2}^{T}e_{t-1}^2-2\sum_{t=2}^{T}e_te_{t-1}.
+\]
+Les deux premières sommes sont presque égales à $\sum_te_t^2$ (il ne manque qu'un terme à chacune). En divisant par $\sum_te_t^2$ :
+\[
+d\approx1+1-2\,\underbrace{\frac{\sum e_te_{t-1}}{\sum e_t^2}}_{r}=2(1-r).
+\]
+Lecture : $r=0\Rightarrow d=2$ ; \ $r\to1\Rightarrow d\to0$ ; \ $r\to-1\Rightarrow d\to4$.
+\end{dev}
+
+\begin{dev}[title={(c) Pourquoi $e_i^2$ marche dans la formule de White}]
+La vraie variance contient $\vX'\bm\Sigma\vX=\sum_i\sigma_i^2\,\mathbf x_i\mathbf x_i'$, avec $\sigma_i^2=\E[\epsilon_i^2\mid\mathbf x_i]$.
+On ne connaît pas $\sigma_i^2$, mais $e_i^2$ en est une estimation (bruitée) observation par observation. Chaque $e_i^2$ est imprécis, mais leur \textbf{moyenne pondérée} $\frac1n\sum e_i^2\mathbf x_i\mathbf x_i'$ converge vers $\frac1n\sum\sigma_i^2\mathbf x_i\mathbf x_i'$ (loi des grands nombres). C'est pourquoi la correction de White est valable en \textbf{grand échantillon}.
+\end{dev}
+
+\begin{dev}[title={(d) $y_{t-1}$ régresseur + erreurs AR(1) : MCO non convergents}]
+Modèle : $y_t=\alpha y_{t-1}+\epsilon_t$, \ $\epsilon_t=\rho\epsilon_{t-1}+u_t$. Notons $c=\Cov(y_t,\epsilon_t)$ (stationnaire).
+
+\textbf{Étape 1.} $\Cov(y_{t-1},\epsilon_t)=\Cov(y_{t-1},\rho\epsilon_{t-1}+u_t)=\rho\,\Cov(y_{t-1},\epsilon_{t-1})=\rho c$ \ ($u_t$ est un choc nouveau).
+
+\textbf{Étape 2.} $c=\Cov(\alpha y_{t-1}+\epsilon_t,\ \epsilon_t)=\alpha\rho c+\sigma_\epsilon^2$, donc $c=\dfrac{\sigma_\epsilon^2}{1-\alpha\rho}$.
+
+\textbf{Conclusion.} $\Cov(y_{t-1},\epsilon_t)=\dfrac{\rho\,\sigma_\epsilon^2}{1-\alpha\rho}\neq0$ dès que $\rho\neq0$ : le régresseur est corrélé avec l'erreur, donc les MCO sont biaisés \textbf{et non convergents}. Solution : variables instrumentales (par ex. $z_{t-1}$ comme instrument de $y_{t-1}$).
+\end{dev}
+
+\section*{4. Les 5 choses à retenir}
+\begin{enumerate}[itemsep=4pt]
+\item Erreurs non sphériques : MCO \textbf{sans biais} mais \textbf{inefficaces}, et leurs écarts-types sont \textbf{faux}.
+\item MCG : transformer le modèle avec $\Pm$ ($\Pm'\Pm=\Om^{-1}$) puis faire les MCO. Hétéroscédasticité : diviser par $\sigma_i$. AR(1) : quasi-différences $y_t-\rho y_{t-1}$.
+\item $\Om$ inconnue : soit on l'estime (MCGE), soit on garde les MCO avec des écarts-types robustes (White, Newey-West, clusters).
+\item Détecter : tests de White ou de Breusch-Pagan pour l'hétéroscédasticité ; tests de Breusch-Godfrey ou Durbin-Watson ($d\approx2$ = pas d'autocorrélation) pour l'AR(1).
+\item Attention : $y_{t-1}$ comme régresseur + erreurs autocorrélées $\Rightarrow$ MCO biaisés et non convergents.
+\end{enumerate}
+
+\end{document}
