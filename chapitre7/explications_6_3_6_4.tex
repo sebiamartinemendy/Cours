@@ -1,0 +1,144 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+\pagestyle{empty}
+
+\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}\newcommand{\E}{\mathbb{E}}
+\newtcolorbox{intuition}[1][]{colback=Goldenrod!8,colframe=Goldenrod!70!black,fonttitle=\bfseries,title={Intuition},#1}
+\newtcolorbox{retenir}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Chapitre 7 -- Sections 6.3 et 6.4}\\[4pt]
+{\large Régression avec erreurs AR(1) et solution par les MCG}
+\end{center}
+
+\textbf{Rappel : c'est quoi AR(1) ?} L'erreur d'aujourd'hui dépend de celle d'hier :
+\[
+\epsilon_t=\rho\,\epsilon_{t-1}+u_t,\qquad |\rho|<1,
+\]
+où $u_t$ est un choc nouveau, imprévisible. Exemple : une grève fait chuter les ventes en janvier ; février sera probablement encore un peu en dessous. $\rho$ mesure à quel point le choc d'hier « déteint » sur aujourd'hui.
+
+% =====================================================================
+\section*{6.3 -- Que deviennent les MCO ?}
+
+Modèle : $y_t=x_t'\beta+\epsilon_t$, avec $\epsilon_t=\rho\epsilon_{t-1}+u_t$.
+
+\subsection*{1. Les MCO restent sans biais}
+L'absence de biais n'exige que $\E[\epsilon\mid X]=0$ (erreurs non liées aux $x$). Que les erreurs soient corrélées \emph{entre elles} ne change rien.
+\begin{intuition}
+Les MCO ne visent pas systématiquement trop haut ou trop bas : les erreurs se « suivent », mais elles restent centrées sur zéro.
+\end{intuition}
+
+\subsection*{2. Les MCO sont inefficaces}
+Les MCO traitent chaque observation comme une information nouvelle et indépendante. Or, avec $\rho>0$, l'observation d'aujourd'hui répète en partie celle d'hier.
+\begin{intuition}
+C'est comme interroger 100 personnes dont la moitié répètent ce qu'a dit leur voisin : on croit avoir 100 avis, mais on en a moins. Les MCO ne tiennent pas compte de cette redondance ; les MCG, si.
+\end{intuition}
+
+\subsection*{3. La variance estimée est fausse, donc les tests aussi}
+Le logiciel calcule $\sigma^2(X'X)^{-1}$, une formule qui suppose des erreurs non corrélées : elle \textbf{oublie les covariances}.
+
+\textbf{Exemple} (moyenne de deux observations, exercice 2 du chapitre 7) :
+\begin{itemize}
+\item formule MCO : $\Var=\sigma_\epsilon^2/2$ ;
+\item vraie variance : $\Var=\sigma_\epsilon^2(1+\rho)/2$.
+\end{itemize}
+Avec $\rho=0{,}5$, la vraie variance est \textbf{1,5 fois plus grande} que celle affichée.
+\begin{intuition}
+Quand $\rho>0$, les erreurs vont dans le même sens plusieurs périodes de suite : elles ne se compensent pas bien, et l'estimation est plus incertaine que ce que croit le logiciel. Écarts-types \textbf{trop petits}, $t$ \textbf{trop grands}, et on rejette $H_0$ trop souvent.
+\end{intuition}
+
+% =====================================================================
+\section*{6.4 -- La solution : les MCG (avec $\rho$ connu)}
+
+\textbf{Objectif :} transformer le modèle pour que ses erreurs ne soient plus corrélées, puis appliquer les MCO.
+
+\subsection*{Étape 1 : écrire le modèle à deux dates}
+\begin{align*}
+\text{aujourd'hui :}\quad & y_t=x_t'\beta+\epsilon_t \tag{38}\\
+\text{hier, multiplié par }\rho\text{ :}\quad & \rho y_{t-1}=\rho x_{t-1}'\beta+\rho\epsilon_{t-1} \tag{39}
+\end{align*}
+
+\subsection*{Étape 2 : soustraire (39) de (38)}
+\[
+y_t-\rho y_{t-1}=(x_t-\rho x_{t-1})'\beta+\underbrace{(\epsilon_t-\rho\epsilon_{t-1})}_{=\,u_t}
+\]
+Donc $\ y_t^*=x_t^{*\prime}\beta+u_t$, avec $y_t^*=y_t-\rho y_{t-1}$ et $x_t^*=x_t-\rho x_{t-1}$ (la \textbf{quasi-différence}).
+\begin{intuition}
+L'erreur $\epsilon_t$ contient deux morceaux : ce qui est \textbf{hérité} d'hier ($\rho\epsilon_{t-1}$) et le \textbf{choc nouveau} ($u_t$). En soustrayant $\rho$ fois l'équation d'hier, on retire exactement la partie héritée. Il ne reste que $u_t$, sans lien avec le passé : on peut appliquer les MCO. Le $\beta$ estimé est le même ; seules les erreurs ont été « nettoyées ».
+\end{intuition}
+
+\subsection*{Étape 3 : le problème de la première observation}
+Pour $t=1$, il faudrait $y_1-\rho y_0$, mais $y_0$ n'existe pas. Si on supprime cette observation (\textbf{Cochrane-Orcutt}), il reste $T-1$ observations : on \textbf{perd de l'information}, ce qui compte surtout en petit échantillon.
+
+\subsection*{Étape 4 : garder la première observation (Prais-Winsten)}
+On ne peut pas la garder telle quelle, car son erreur n'a pas la même variance que les $u_t$ :
+\[
+\Var(u_t)=\sigma_u^2,\qquad \Var(\epsilon_1)=\frac{\sigma_u^2}{1-\rho^2}\quad(\text{plus grande}).
+\]
+\begin{intuition}
+$u_t$ est un seul choc. $\epsilon_1$, lui, accumule \textbf{tous les chocs passés} ($u_1+\rho u_0+\rho^2u_{-1}+\dots$), donc il varie davantage.
+\end{intuition}
+On multiplie la première observation par $\sqrt{1-\rho^2}$ :
+\[
+\Var\big(\sqrt{1-\rho^2}\,\epsilon_1\big)=(1-\rho^2)\cdot\frac{\sigma_u^2}{1-\rho^2}=\sigma_u^2\ \checkmark
+\]
+d'où la première équation transformée :
+\[
+\sqrt{1-\rho^2}\,y_1=\sqrt{1-\rho^2}\,x_1'\beta+\sqrt{1-\rho^2}\,\epsilon_1 .
+\]
+Sa variance est maintenant la même que celle des autres observations.
+
+\subsection*{Le modèle complet transformé (44)}
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+& $t=1$ & $t>1$ \\
+\midrule
+$y^*$ & $\sqrt{1-\rho^2}\,y_1$ & $y_t-\rho y_{t-1}$ \\
+$x^*$ & $\sqrt{1-\rho^2}\,x_1$ & $x_t-\rho x_{t-1}$ \\
+erreur & $\sqrt{1-\rho^2}\,\epsilon_1$ & $u_t$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+On applique les MCO à $y^*$ sur $x^*$ : ce sont les \textbf{MCG}, l'estimateur efficace.
+
+\textbf{Piège pratique :} la constante est elle aussi transformée. Sa colonne de 1 devient $\sqrt{1-\rho^2}$ pour $t=1$ et $1-\rho$ pour $t>1$. On ne rajoute donc pas de constante habituelle : on régresse sur cette colonne transformée.
+
+\textbf{Limite :} tout cela suppose $\rho$ \textbf{connu}. En pratique, on l'estime (section 6.5).
+
+% =====================================================================
+\section*{Ce qu'il faut retenir}
+
+\begin{retenir}[title={6.3 -- Les MCO avec des erreurs AR(1)}]
+\begin{enumerate}
+\item \textbf{Sans biais} : les erreurs restent non liées aux $x$.
+\item \textbf{Inefficaces} : les observations se répètent en partie, et les MCO ne le savent pas.
+\item \textbf{Tests faux} : $\sigma^2(X'X)^{-1}$ oublie les covariances ; avec $\rho>0$, écarts-types trop petits et rejets de $H_0$ trop fréquents.
+\end{enumerate}
+\end{retenir}
+
+\begin{retenir}[title={6.4 -- La solution (MCG, $\rho$ connu)}]
+\begin{enumerate}
+\item \textbf{Quasi-différence} : $y_t-\rho y_{t-1}=(x_t-\rho x_{t-1})'\beta+u_t$. On enlève la partie héritée ; il reste le choc nouveau $u_t$.
+\item \textbf{Première observation} : multipliée par $\sqrt{1-\rho^2}$ pour avoir la même variance (Prais-Winsten). La supprimer, c'est Cochrane-Orcutt (perte d'information).
+\item \textbf{Ensuite} : MCO sur le modèle transformé $=$ MCG, l'estimateur efficace.
+\item \textbf{Limite} : il faut connaître $\rho$ ; en pratique on l'estime (section 6.5).
+\end{enumerate}
+\end{retenir}
+
+\end{document}
