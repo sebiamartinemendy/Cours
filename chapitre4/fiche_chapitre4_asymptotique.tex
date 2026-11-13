@@ -18,7 +18,7 @@
 \newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\Q}{\mathbf{Q}}\newcommand{\I}{\mathbf{I}}
 \newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\plim}{\operatorname{plim}}
 \newtcolorbox{outil}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,#1}
-\newtcolorbox{dev}[1][]{colback=Cerulean!5,colframe=Cerulean!70!black,fonttitle=\bfseries,breakable,#1}
+\newtcolorbox{dev}[1][]{colback=Cerulean!5,colframe=Cerulean!70!black,fonttitle=\bfseries,#1}
 
 \begin{document}
 
@@ -128,6 +128,27 @@ $\tilde y_4=\bar y$ & $\mu$ & $\dfrac{\sigma^2}{n}\to0$ & sans biais, \textbf{co
 $S^2=\frac1{n-1}\sum(Y_i-\bar Y)^2$ est sans biais pour $\sigma^2$. Mais la racine n'est pas linéaire :
 $\E[S]=\E\big[\sqrt{S^2}\big]\neq\sqrt{\E[S^2]}=\sigma$, donc $S$ est \textbf{biaisé}.
 Avec le plim (fonction continue) : $\plim S=\sqrt{\plim S^2}=\sqrt{\sigma^2}=\sigma$, donc $S$ est \textbf{convergent}.
+\end{dev}
+
+\begin{dev}[title={Estimer $\sigma^2$ avec la loi des grands nombres}]
+\textbf{Départ :} $\sigma^2=\E[Y^2]-(\E[Y])^2$.
+
+\textbf{Idée :} on remplace chaque espérance par une moyenne d'échantillon :
+\[
+\hat\sigma^2=\frac1n\sum Y_i^2-\bar Y^2=\frac1n\sum(Y_i-\bar Y)^2 .
+\]
+\textbf{Convergent :} $\plim\frac1n\sum Y_i^2=\E[Y^2]$ et $\plim\bar Y^2=(\E[Y])^2$ (LGN + Slutsky), donc $\plim\hat\sigma^2=\sigma^2$.
+
+\textbf{Remarque :} $\hat\sigma^2$ est biaisé ($\E[\hat\sigma^2]=\frac{n-1}{n}\sigma^2$), mais ce biais disparaît quand $n\to\infty$.
+\end{dev}
+
+\begin{dev}[title={La décomposition de la variance}]
+\[
+\Var(Y)=\underbrace{\E\big[\Var(Y\mid X)\big]}_{\text{variance à l'intérieur des groupes}}+\underbrace{\Var\big(\E[Y\mid X]\big)}_{\text{variance des moyennes}}
+\]
+\textbf{En mots :} la variance totale = la variance moyenne autour de chaque moyenne conditionnelle + la variance de ces moyennes.
+
+\textbf{Utilité :} pour $\frac{\vX'\veps}{n}$, la 2\textsuperscript{e} partie vaut 0 (car $\E[\veps\mid\vX]=\mathbf 0$) ; il ne reste que la 1\textsuperscript{re}, qui donne $\frac{\sigma^2}{n}\E\big[\frac{\vX'\vX}{n}\big]\to\mathbf 0$.
 \end{dev}
 
 \begin{dev}[title={Pourquoi $\plim\frac{\vX'\veps}{n}=\mathbf 0$ (les deux conditions)}]
