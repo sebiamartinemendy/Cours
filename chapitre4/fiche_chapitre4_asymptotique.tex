@@ -1,0 +1,149 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\setlength{\parskip}{0.5em}\setlength{\parindent}{0pt}
+\setlist{nosep}
+\pagestyle{empty}
+
+\newcommand{\vX}{\mathbf{X}}\newcommand{\vb}{\mathbf{b}}\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vbeta}{\bm{\beta}}\newcommand{\veps}{\bm{\epsilon}}\newcommand{\Q}{\mathbf{Q}}\newcommand{\I}{\mathbf{I}}
+\newcommand{\E}{\mathbb{E}}\newcommand{\Var}{\operatorname{Var}}\newcommand{\plim}{\operatorname{plim}}
+\newtcolorbox{outil}[1][]{colback=ForestGreen!6,colframe=ForestGreen!70!black,fonttitle=\bfseries,#1}
+\newtcolorbox{dev}[1][]{colback=Cerulean!5,colframe=Cerulean!70!black,fonttitle=\bfseries,breakable,#1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Chapitre 4 -- Analyse asymptotique}\\[4pt]
+{\large La fiche simple}
+\end{center}
+
+\section*{1. L'idée}
+
+« Asymptotique » veut dire : \textbf{que se passe-t-il quand l'échantillon devient très grand} ($n\to\infty$) ? On en a besoin pour deux raisons :
+\begin{enumerate}
+\item Parfois les MCO sont \textbf{biaisés}. On veut savoir si ce biais \textbf{disparaît} quand $n$ grandit : c'est la \textbf{convergence}.
+\item On veut faire des \textbf{tests} même quand les erreurs \textbf{ne sont pas normales}.
+\end{enumerate}
+
+\section*{2. Les outils}
+
+\begin{outil}[title={Convergence en probabilité (plim)}]
+\textbf{Définition :}\quad $\plim X_n=C$ si $\lim_{n\to\infty}P(|X_n-C|>\epsilon)=0$ pour tout $\epsilon>0$.
+
+\textbf{En mots :} quand $n$ grandit, $X_n$ se concentre de plus en plus autour de $C$.
+
+\textbf{Deux conditions suffisantes :}\quad (1) $\lim\E(X_n)=C$ \quad et \quad (2) $\lim\Var(X_n)=0$.
+\end{outil}
+
+\begin{outil}[title={Loi des grands nombres}]
+\textbf{Énoncé :} la moyenne d'échantillon converge vers l'espérance de la population : $\plim\bar Y_n=\E[Y]=\mu$.
+
+\textbf{Pourquoi :} $\E(\bar Y_n)=\mu$ et $\Var(\bar Y_n)=\sigma^2/n\to0$ (les deux conditions).
+
+\textbf{Utilité :} valable pour toute variable, par ex. $\plim\frac1n\sum Y_i^2=\E[Y^2]$. On peut donc remplacer une espérance par une moyenne d'échantillon pour construire un estimateur convergent.
+\end{outil}
+
+\begin{outil}[title={Propriétés des plim (théorème de Slutsky)}]
+Si $\plim X_n=\alpha$ et $\plim Y_n=\beta$ :\quad $\plim(X_n+Y_n)=\alpha+\beta$, \ $\plim(X_nY_n)=\alpha\beta$, \ $\plim(X_n/Y_n)=\alpha/\beta$.
+
+Pour $g$ continue :\quad $\plim g(Y_n)=g(\plim Y_n)$.
+
+\textbf{Ce qui fait leur force :} contrairement à l'espérance, le plim « passe » à travers les produits et les fonctions. Par ex. $\E[S]\neq\sqrt{\E[S^2]}$, mais $\plim S=\sqrt{\plim S^2}=\sigma$.
+\end{outil}
+
+\begin{outil}[title={Les MCO sont convergents}]
+On écrit $\vb=\vbeta+\Big(\dfrac{\vX'\vX}{n}\Big)^{-1}\dfrac{\vX'\veps}{n}$ (on divise par $n$ pour avoir des moyennes, qui ont une limite finie).
+
+Avec l'hypothèse $\plim\frac{\vX'\vX}{n}=\Q$ (définie positive) :
+\[
+\plim\vb=\vbeta+\Q^{-1}\,\plim\frac{\vX'\veps}{n}
+\]
+\textbf{Règle :} les MCO sont convergents si $\plim\frac{\vX'\veps}{n}=\mathbf 0$, ce qui est vrai si $\E[\epsilon_i\mid\vx_i]=0$.
+\end{outil}
+
+\begin{outil}[title={Sans biais ou convergent : la différence clé}]
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lll@{}}
+\toprule
+& Condition & L'erreur $\epsilon_i$ doit être sans lien avec\dots \\
+\midrule
+\textbf{Sans biais} & $\E[\epsilon_i\mid\vX]=0$ & \textbf{toutes} les observations de $\vX$ \\
+\textbf{Convergent} & $\E[\epsilon_i\mid\vx_i]=0$ & seulement \textbf{sa propre} observation $\vx_i$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+La condition de convergence est \textbf{plus faible}. Exemple : $y_t=\beta_0+\beta_1y_{t-1}+\epsilon_t$. $\epsilon_t$ est sans lien avec $y_{t-1}$ (convergent), mais il fait partie de $y_t$, qui est le régresseur de la date suivante (biaisé).
+\end{outil}
+
+\begin{outil}[title={Théorème central limite (TCL)}]
+Si $X_i$ i.i.d.$(\mu,\sigma^2)$ :\quad $\sqrt n\,(\bar X_n-\mu)\ \xrightarrow{d}\ N(0,\sigma^2)$, \ \textbf{quelle que soit la loi des $X_i$}.
+
+\textbf{Pourquoi $\sqrt n$ ?} $\bar X_n$ seul se concentre sur un point (sa variance tend vers 0). Multiplier par $\sqrt n$ « stabilise » la variance pour obtenir une vraie loi limite.
+
+\textbf{En pratique :}\quad $\bar X_n\overset{a}{\sim}N\big(\mu,\ \sigma^2/n\big)$ (« $\overset{a}{\sim}$ » : approximativement, en grand échantillon).
+
+\textbf{Règle générale :} la somme (ou la moyenne) de beaucoup de variables aléatoires suit approximativement une loi normale.
+\end{outil}
+
+\begin{outil}[title={Loi asymptotique des MCO (sans supposer la normalité)}]
+$\vb-\vbeta=(\vX'\vX)^{-1}\vX'\veps$, et chaque élément de $\frac{\vX'\veps}{n}$ est une moyenne de termes d'espérance nulle : on applique le TCL.
+\[
+\sqrt n(\vb-\vbeta)\xrightarrow{d}N\big(\mathbf 0,\ \sigma^2\Q^{-1}\big)
+\qquad\Longrightarrow\qquad
+\vb\overset{a}{\sim}N\big(\vbeta,\ \sigma^2(\vX'\vX)^{-1}\big)
+\]
+\textbf{Conséquence :} les tests $t$ et $F$ restent valables en grand échantillon, même si les erreurs ne sont pas normales. (Quand $\sigma$ est inconnu, on continue d'utiliser la loi de Student.)
+\end{outil}
+
+\section*{3. Les exemples développés}
+
+\begin{dev}[title={Les 4 cas : biaisé ou non, convergent ou non ($Y_i$ i.i.d.$(\mu,\sigma^2)$)}]
+\small\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Estimateur & Espérance & Variance & Conclusion \\
+\midrule
+$\tilde y_1=\dfrac{\sum_{i=1}^n y_i}{n+1}$ & $\dfrac{n}{n+1}\mu\to\mu$ & $\dfrac{n\sigma^2}{(n+1)^2}\to0$ & biaisé, \textbf{convergent} \\
+$\tilde y_2=y_1+\dfrac{\sum_{i=2}^n y_i}{n+1}$ & $\mu+\dfrac{n-1}{n+1}\mu\to2\mu$ & $\to\sigma^2$ & biaisé, \textbf{non convergent} \\
+$\tilde y_3=y_1$ & $\mu$ & $\sigma^2$ (ne baisse pas) & sans biais, \textbf{non convergent} \\
+$\tilde y_4=\bar y$ & $\mu$ & $\dfrac{\sigma^2}{n}\to0$ & sans biais, \textbf{convergent} \\
+\bottomrule
+\end{tabular}
+
+\textbf{Lecture :} convergent $=$ le biais \emph{et} la variance disparaissent quand $n\to\infty$. $\tilde y_3$ est sans biais mais n'utilise qu'une observation : il ne s'améliore jamais.
+\end{dev}
+
+\begin{dev}[title={Estimer $\sigma$ : $S$ est biaisé mais convergent}]
+$S^2=\frac1{n-1}\sum(Y_i-\bar Y)^2$ est sans biais pour $\sigma^2$. Mais la racine n'est pas linéaire :
+$\E[S]=\E\big[\sqrt{S^2}\big]\neq\sqrt{\E[S^2]}=\sigma$, donc $S$ est \textbf{biaisé}.
+Avec le plim (fonction continue) : $\plim S=\sqrt{\plim S^2}=\sqrt{\sigma^2}=\sigma$, donc $S$ est \textbf{convergent}.
+\end{dev}
+
+\begin{dev}[title={Pourquoi $\plim\frac{\vX'\veps}{n}=\mathbf 0$ (les deux conditions)}]
+\textbf{(1) Espérance nulle.} Chaque élément est $\frac1n\sum_iX_{ki}\epsilon_i$, et $\E[X_{ki}\epsilon_i]=\E\big[X_{ki}\,\E[\epsilon_i\mid X_{ki}]\big]=0$ (espérances itérées).
+
+\textbf{(2) Variance qui tend vers 0.} Par la décomposition de la variance et $\E[\veps\veps'\mid\vX]=\sigma^2\I$ :
+$\Var\big(\frac{\vX'\veps}{n}\big)=\frac{\sigma^2}{n}\,\E\big[\frac{\vX'\vX}{n}\big]\to0\cdot\Q=\mathbf 0$.
+\end{dev}
+
+\section*{4. Les 5 choses à retenir}
+\begin{enumerate}[itemsep=4pt]
+\item \textbf{Convergent} = l'estimateur se rapproche de la vraie valeur quand $n\to\infty$. Vérifier : $\lim\E=$ vraie valeur et $\lim\Var=0$.
+\item \textbf{Loi des grands nombres} : une moyenne d'échantillon converge vers l'espérance.
+\item \textbf{plim} : passe à travers les sommes, produits, quotients et fonctions continues (pas l'espérance).
+\item \textbf{MCO convergents} si $\E[\epsilon_i\mid\vx_i]=0$ ; c'est plus faible que la condition d'absence de biais $\E[\epsilon_i\mid\vX]=0$.
+\item \textbf{TCL} : sans normalité, $\vb\overset{a}{\sim}N(\vbeta,\sigma^2(\vX'\vX)^{-1})$ en grand échantillon, donc les tests habituels restent valables.
+\end{enumerate}
+
+\end{document}
